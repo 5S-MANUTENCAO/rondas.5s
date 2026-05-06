@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Rondas 5S</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#f1f5f9}
+.btn-p{background:#1d4ed8;color:#fff;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .2s}
+.btn-p:hover{background:#1e40af}
+.btn-s{background:#16a34a;color:#fff;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-sec{background:#6b7280;color:#fff;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.bg{background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.by{background:#fef9c3;color:#ca8a04;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.br{background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.ph{color:#fff;padding:12px 16px;font-weight:700;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.seiri{background:#ef4444}.seiton{background:#f97316}.seiso{background:#eab308}.seiketsu{background:#22c55e}.shitsuke{background:#3b82f6}
+.ro{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:6px 12px;border-radius:8px;border:2px solid #e5e7eb;transition:all .15s;user-select:none;font-size:14px;font-weight:500}
+.rc{border-color:#16a34a;background:#dcfce7;color:#15803d}
+.rn{border-color:#dc2626;background:#fee2e2;color:#b91c1c}
+.ra{border-color:#6b7280;background:#f3f4f6;color:#4b5563}
+input,textarea,select{border:1px solid #d1d5db;border-radius:8px;padding:8px 12px;width:100%;font-size:14px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.pb{height:10px;border-radius:999px;background:#e5e7eb;overflow:hidden}
+.pf{height:100%;border-radius:999px;transition:width .5s}
+.nt{padding:10px 12px;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;color:#6b7280;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;font-size:14px}
+.nt.active{border-bottom-color:#1d4ed8;color:#1d4ed8}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.mb{background:#fff;border-radius:16px;padding:28px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto}
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:14px 20px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:0 4px 24px rgba(0,0,0,.2);display:flex;align-items:center;gap:10px;animation:su .3s ease}
+.ts{background:#16a34a;color:#fff}.te{background:#dc2626;color:#fff}.ti{background:#1d4ed8;color:#fff}.tw{background:#d97706;color:#fff}
+.fl{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:#2563eb;font-size:13px;font-weight:500;padding:4px 10px;border-radius:6px;border:1px dashed #93c5fd}
+.sp{display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes su{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fi{animation:fi .3s ease}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#f1f5f9}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+</style>
+</head>
+<body>
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px"><div style="width:48px;height:48px;border-radius:50%;border:5px solid #e2e8f0;border-top-color:#1d4ed8;animation:spin .7s linear infinite"></div><p style="color:#64748b;font-family:sans-serif;font-weight:600">Carregando...</p></div></div>
+
+<script>
+const FB={
+  apiKey:"AIzaSyAtnTU8nmF8FEN7E10f3gF9Rzpk-S88nY",
+  authDomain:"fir-manutencao.firebaseapp.com",
+  databaseURL:"https://fir-manutencao-default-rtdb.firebaseio.com",
+  projectId:"fir-manutencao",
+  storageBucket:"fir-manutencao.firebasestorage.app",
+  messagingSenderId:"584542609290",
+  appId:"1:584542609290:web:89b206dd1d746621d47273"
+};
+firebase.initializeApp(FB);
+const db=firebase.firestore();
+const st=firebase.storage();
+const auth=firebase.auth();
+auth.signInAnonymously().catch(e=>console.warn(e.message));
+
+const DEMO={
+  rondas:[
+    {id:"d1",data:"2026-04-28",setor:"Linha 3 CNC",responsavel:"Joao Silva",turno:"manha",conformidade_percentual:87,pontos:61,ncs_total:1,checklist:{}},
+    {id:"d2",data:"2026-04-21",setor:"Area de Solda",responsavel:"Maria Santos",turno:"tarde",conformidade_percentual:65,pontos:45,ncs_total:3,checklist:{}},
+    {id:"d3",data:"2026-04-14",setor:"Almoxarifado",responsavel:"Carlos Lima",turno:"manha",conformidade_percentual:92,pontos:64,ncs_total:0,checklist:{}},
+    {id:"d4",data:"2026-04-07",setor:"Compressores",responsavel:"Ana Ferreira",turno:"noite",conformidade_percentual:74,pontos:51,ncs_total:2,checklist:{}}
+  ],
+  ncs:[
+    {id:"n1",descricao:"Oleo no piso CNC",responsavel:"Joao",prazo:"2026-05-10",status:"aberto",ronda_id:"d1"},
+    {id:"n2",descricao:"Ferramentas sem local",responsavel:"Maria",prazo:"2026-05-08",status:"em_andamento",ronda_id:"d2"},
+    {id:"n3",descricao:"EPI faltando solda",responsavel:"Carlos",prazo:"2026-04-30",status:"resolvido",ronda_id:"d2"},
+    {id:"n4",descricao:"Vazamento compressor 2",responsavel:"Ana",prazo:"2026-05-15",status:"aberto",ronda_id:"d4"}
+  ],
+  kpi:[
+    {id:"2026-01",mes:"2026-01",total_pontos:198},
+    {id:"2026-02",mes:"2026-02",total_pontos:220},
+    {id:"2026-03",mes:"2026-03",total_pontos:263},
+    {id:"2026-04",mes:"2026-04",total_pontos:155}
+  ]
+};
+
+window.FS={
+  async criarRonda(d){
+    const r=await db.collection("rondas").add({...d,criadoEm:firebase.firestore.FieldValue.serverTimestamp()});
+    return r.id;
+  },
+  async getRondas(){
+    try{
+      const s=await db.collection("rondas").orderBy("criadoEm","desc").get();
+      return s.docs.map(d=>({id:d.id,...d.data()}));
+    }catch(e){console.warn("demo rondas");return DEMO.rondas;}
+  },
+  async criarNC(d){
+    const r=await db.collection("nonconformities").add({...d,status:d.status||"aberto",criadoEm:firebase.firestore.FieldValue.serverTimestamp()});
+    return r.id;
+  },
+  async getNCs(rid=null){
+    try{
+      let q=db.collection("nonconformities").orderBy("criadoEm","desc");
+      if(rid)q=db.collection("nonconformities").where("ronda_id","==",rid).orderBy("criadoEm","desc");
+      const s=await q.get();
+      return s.docs.map(d=>({id:d.id,...d.data()}));
+    }catch(e){return rid?DEMO.ncs.filter(n=>n.ronda_id===rid):DEMO.ncs;}
+  },
+  async atualizarNC(id,d){await db.collection("nonconformities").doc(id).update({...d,atualizado:firebase.firestore.FieldValue.serverTimestamp()});},
+  async deletarNC(id){await db.collection("nonconformities").doc(id).delete();},
+  async criarRelatorio(d){const r=await db.collection("reports").add({...d,criadoEm:firebase.firestore.FieldValue.serverTimestamp()});return r.id;},
+  async getRelatorios(){
+    try{const s=await db.collection("reports").orderBy("criadoEm","desc").get();return s.docs.map(d=>({id:d.id,...d.data()}));}
+    catch(e){return[];}
+  },
+  async incPontos(mes,pts){
+    try{await db.collection("kpi_monthly").doc(mes).set({mes,total_pontos:firebase.firestore.FieldValue.increment(pts),att:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}
+    catch(e){console.warn(e.message);}
+  },
+  async getKPI(){
+    try{const s=await db.collection("kpi_monthly").orderBy("mes","desc").limit(6).get();return s.docs.map(d=>({id:d.id,...d.data()})).reverse();}
+    catch(e){return DEMO.kpi;}
+  },
+  async uploadFoto(arq,path,onProg){
+    if(!arq)return null;
+    try{
+      const ref=st.ref(path);
+      if(onProg){return await new Promise((res,rej)=>{const t=ref.put(arq);t.on("state_changed",s=>onProg(Math.round(s.bytesTransferred/s.totalBytes*100)),rej,async()=>res(await t.snapshot.ref.getDownloadURL()));});}
+      await ref.put(arq);return await ref.getDownloadURL();
+    }catch(e){return URL.createObjectURL(arq);}
+  },
+  async uploadBlob(blob,path){
+    try{const ref=st.ref(path);await ref.put(blob);return await ref.getDownloadURL();}
+    catch(e){return null;}
+  }
+};
+console.log("✅ Firebase OK!");
+</script>
+
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef,useCallback,useMemo}=React;
+
+const P5={
+  Seiri   :{label:"Seiri — Utilizacao",   cor:"seiri",   e:"🔴",itens:["Ha itens desnecessarios?","Materiais sem uso?","Equipamentos obsoletos removidos?","Documentos desnecessarios?"]},
+  Seiton  :{label:"Seiton — Organizacao", cor:"seiton",  e:"🟠",itens:["Ferramentas com local definido?","Materiais organizados?","Etiquetas legiveis?","Layout eficiente?"]},
+  Seiso   :{label:"Seiso — Limpeza",      cor:"seiso",   e:"🟡",itens:["Area limpa?","Equipamentos sem oleo?","Piso sem residuos?","Lixeiras corretas?"]},
+  Seiketsu:{label:"Seiketsu — Padronizacao",cor:"seiketsu",e:"🟢",itens:["Padroes visuais expostos?","EPIs disponiveis?","Manutencoes em dia?","Registros visiveis?"]},
+  Shitsuke:{label:"Shitsuke — Disciplina", cor:"shitsuke",e:"🔵",itens:["Procedimentos seguidos?","Rondas anteriores ok?","Treinamentos 5S feitos?","Melhorias implementadas?"]}
+};
+const PLS=Object.keys(P5);
+
+const cc=ck=>{let t=0,c=0;PLS.forEach(p=>(ck[p]||[]).forEach(i=>{if(i.s==="c"||i.s==="n"){t++;if(i.s==="c")c++;}}));return t?c/t*100:0;};
+const cp=pct=>Math.round(pct*.7);
+const cx=p=>p>=80?"#16a34a":p>=60?"#ca8a04":"#dc2626";
+const fd=ts=>{if(!ts)return"—";if(ts?.toDate)return ts.toDate().toLocaleDateString("pt-BR");return new Date(ts).toLocaleDateString("pt-BR");};
+
+const useToast=()=>{
+  const[t,sT]=useState(null);const tm=useRef(null);
+  const show=useCallback((msg,tipo="success")=>{clearTimeout(tm.current);sT({msg,tipo});tm.current=setTimeout(()=>sT(null),3500);},[]);
+  useEffect(()=>()=>clearTimeout(tm.current),[]);
+  return{toast:t,show};
+};
+
+const Toast=({toast:t})=>{
+  if(!t)return null;
+  return<div className={`toast t${t.tipo[0]}`}>
+    <span>{{success:"✔",error:"✘",info:"ℹ",warning:"⚠"}[t.tipo]}</span>
+    <span>{t.msg}</span>
+  </div>;
+};
+
+const Spin=({sz=40,c="#3b82f6"})=>(
+  <div style={{width:sz,height:sz,borderRadius:"50%",border:`${Math.max(3,sz/12)}px solid #e2e8f0`,borderTopColor:c,animation:"spin .7s linear infinite",margin:"0 auto"}}/>
+);
+
+const PBar=({pct,h=10,lbl=false})=>(
+  <div><div className="pb" style={{height:h}}>
+    <div className="pf" style={{width:`${Math.min(100,Math.max(0,pct))}%`,background:pct>=80?"#22c55e":pct>=60?"#eab308":"#ef4444"}}/>
+  </div>{lbl&&<div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#9ca3af",marginTop:2}}><span>0%</span><span>Meta:80%</span><span>100%</span></div>}</div>
+);
+
+const BSt=({s})=>s==="resolvido"?<span className="bg">✔ Resolvido</span>:s==="em_andamento"?<span className="by">⟳ Em Andamento</span>:<span className="br">○ Aberto</span>;
+const LPct=({p})=>p>=80?<span className="bg">✔ Boa</span>:p>=60?<span className="by">⚠ Regular</span>:<span className="br">✘ Critico</span>;
+const Err=({msg,back})=>(
+  <div style={{maxWidth:500,margin:"60px auto",padding:16}}>
+    <div style={{background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:12,padding:32,textAlign:"center"}}>
+      <div style={{fontSize:40,marginBottom:12}}>❌</div>
+      <p style={{color:"#dc2626",fontWeight:600,marginBottom:16}}>{msg}</p>
+      <button className="btn-sec" onClick={back}>← Voltar</button>
+    </div>
+  </div>
+);
+
+/* ── TELA INICIAL ── */
+const Home=({go})=>(
+  <div className="fi" style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24}}>
+    <div style={{textAlign:"center",marginBottom:40}}>
+      <div style={{fontSize:72,marginBottom:16}}>🏭</div>
+      <h1 style={{fontSize:28,fontWeight:700,color:"#1e293b"}}>Sistema de Rondas 5S</h1>
+      <p style={{color:"#64748b",marginTop:8,fontSize:18}}>Setor de Manutencao Industrial</p>
+      <p style={{color:"#94a3b8",fontSize:13,marginTop:4}}>{new Date().toLocaleDateString("pt-BR",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}</p>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:20,width:"100%",maxWidth:720}}>
+      {[{e:"📋",l:"Nova Ronda",s:"Iniciar checklist",t:"nova",bg:"#1d4ed8"},{e:"📁",l:"Historico",s:"Rondas anteriores",t:"hist",bg:"#334155"},{e:"📊",l:"Dashboard",s:"Graficos e KPIs",t:"dash",bg:"#16a34a"}].map(({e,l,s,t,bg})=>(
+        <button key={t} onClick={()=>go(t)} className="card" style={{padding:32,display:"flex",flexDirection:"column",alignItems:"center",gap:12,background:bg,color:"#fff",cursor:"pointer",border:"none",transition:"transform .2s"}} onMouseEnter={ev=>ev.currentTarget.style.transform="translateY(-4px)"} onMouseLeave={ev=>ev.currentTarget.style.transform="translateY(0)"}>
+          <span style={{fontSize:48}}>{e}</span><span style={{fontSize:18,fontWeight:700}}>{l}</span><span style={{fontSize:13,opacity:.8}}>{s}</span>
+        </button>
+      ))}
+    </div>
+    <div className="card" style={{marginTop:24,padding:"12px 20px",width:"100%",maxWidth:720,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,fontSize:12,color:"#94a3b8"}}>
+        <span style={{width:8,height:8,borderRadius:"50%",background:"#22c55e",display:"inline-block"}}/>
+        Firebase — <strong style={{color:"#475569"}}>fir-manutencao</strong>
+      </div>
+      <div style={{display:"flex",gap:16}}>
+        <button onClick={()=>go("ncs")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:"#ef4444",fontWeight:600}}>⚠ NCs →</button>
+        <button onClick={()=>go("rel")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:"#2563eb",fontWeight:600}}>📄 Relatorios →</button>
+      </div>
+    </div>
+  </div>
+);
+
+/* ── NOVA RONDA ── */
+const Nova=({go})=>{
+  const tot=PLS.length+2;
+  const[step,sStep]=useState(0);
+  const[info,sInfo]=useState({setor:"",resp:"",turno:"manha",data:new Date().toISOString().split("T")[0],obs:""});
+  const[ck,sCk]=useState(()=>{const o={};PLS.forEach(p=>{o[p]=P5[p].itens.map(d=>({d,s:"",o:"",foto:null,up:0}));});return o;});
+  const[ncs,sNcs]=useState([]);
+  const[salv,sSalv]=useState(false);
+  const[erro,sErro]=useState("");
+  const{toast,show}=useToast();
+  const pct=useMemo(()=>cc(ck),[ck]);
+
+  const si=useCallback((p,i,k,v)=>{
+    sCk(prev=>{
+      const u={...prev,[p]:prev[p].map((it,x)=>x===i?{...it,[k]:v}:it)};
+      if(k==="s"){
+        if(v==="n") sNcs(ns=>ns.find(n=>n._p===p&&n._i===i)?ns:[...ns,{_p:p,_i:i,descricao:`NC — ${P5[p].itens[i]}`,responsavel:info.resp,prazo:"",status:"aberto",obs:""}]);
+        else sNcs(ns=>ns.filter(n=>!(n._p===p&&n._i===i)));
+      }
+      return u;
+    });
+  },[info.resp]);
+
+  const sf=useCallback(async(p,i,arq)=>{
+    if(!arq)return;show("📷 Enviando...","info");
+    try{const url=await window.FS.uploadFoto(arq,`rondas/${Date.now()}_${arq.name}`,pv=>si(p,i,"up",pv));si(p,i,"foto",url);si(p,i,"up",100);show("✔ Foto!","success");}
+    catch(e){show("Erro upload","error");}
+  },[show,si]);
+
+  const salvar=async()=>{
+    if(!info.setor.trim()){sErro("⚠ Informe o setor!");return;}
+    if(!info.resp.trim()){sErro("⚠ Informe o responsavel!");return;}
+    sErro("");sSalv(true);
+    try{
+      const pts=cp(pct);
+      const rid=await window.FS.criarRonda({setor:info.setor,responsavel:info.resp,turno:info.turno,data:info.data,observacoes:info.obs,checklist:ck,conformidade_percentual:pct,pontos:pts,ncs_total:ncs.length,status:"finalizada"});
+      for(const nc of ncs){const{_p,_i,...n}=nc;await window.FS.criarNC({...n,ronda_id:rid});}
+      await window.FS.incPontos(info.data.substring(0,7),pts);
+      show("✔ Ronda salva!","success");
+      setTimeout(()=>go("hist"),2000);
+    }catch(e){sErro("Erro: "+e.message);show("Erro!","error");}
+    sSalv(false);
+  };
+
+  const rs=()=>{
+    if(step===0)return(
+      <div className="card fi" style={{padding:24}}>
+        <h3 style={{fontSize:17,fontWeight:700,marginBottom:20,color:"#1e293b"}}>📝 Informacoes da Ronda</h3>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+          {[{l:"Setor / Maquina *",k:"setor",t:"text",p:"Ex: Linha 3"},{l:"Responsavel *",k:"resp",t:"text",p:"Nome"},{l:"Data",k:"data",t:"date",p:""}].map(({l,k,t,p})=>(
+            <div key={k}><label style={{display:"block",fontSize:13,fontWeight:600,color:"#374151",marginBottom:6}}>{l}</label>
+            <input type={t} placeholder={p} value={info[k]} onChange={e=>sInfo(v=>({...v,[k]:e.target.value}))}/></div>
+          ))}
+          <div><label style={{display:"block",fontSize:13,fontWeight:600,color:"#374151",marginBottom:6}}>Turno</label>
+          <select value={info.turno} onChange={e=>sInfo(v=>({...v,turno:e.target.value}))}>
+            <option value="manha">🌅 Manha</option><option value="tarde">☀️ Tarde</option><option value="noite">🌙 Noite</option>
+          </select></div>
+          <div style={{gridColumn:"1/-1"}}><label style={{display:"block",fontSize:13,fontWeight:600,color:"#374151",marginBottom:6}}>Observacoes</label>
+          <textarea rows={3} value={info.obs} onChange={e=>sInfo(v=>({...v,obs:e.target.value}))}/></div>
+        </div>
+        {erro&&<div style={{marginTop:12,background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:8,padding:10,color:"#dc2626",fontSize:13}}>{erro}</div>}
+      </div>
+    );
+    if(step>=1&&step<=PLS.length){
+      const pl=PLS[step-1];const pd=P5[pl];
+      return(
+        <div className="card fi" style={{overflow:"hidden"}}>
+          <div className={`ph ${pd.cor}`}>
+            <span>{pd.e} {pd.label}</span>
+            <span style={{fontSize:13,opacity:.85,background:"rgba(255,255,255,.2)",padding:"2px 10px",borderRadius:20}}>
+              {ck[pl].filter(i=>i.s!=="").length}/{ck[pl].length} ✔
+            </span>
+          </div>
+          <div style={{padding:16,display:"flex",flexDirection:"column",gap:12}}>
+            {ck[pl].map((it,idx)=>{
+              const bc=it.s==="c"?"#16a34a":it.s==="n"?"#dc2626":it.s==="a"?"#9ca3af":"#e5e7eb";
+              const bg=it.s==="c"?"#f0fdf4":it.s==="n"?"#fff1f2":it.s==="a"?"#f9fafb":"#fff";
+              return(
+                <div key={idx} style={{border:`2px solid ${bc}`,borderRadius:10,padding:14,background:bg}}>
+                  <p style={{fontWeight:600,color:"#1e293b",fontSize:14,marginBottom:10}}><span style={{color:"#94a3b8",marginRight:4}}>{idx+1}.</span>{it.d}</p>
+                  <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:8}}>
+                    {[{v:"c",l:"✔ Conforme",cl:"rc"},{v:"n",l:"✘ Nao Conforme",cl:"rn"},{v:"a",l:"— N/A",cl:"ra"}].map(({v,l,cl})=>(
+                      <label key={v} className={`ro ${it.s===v?cl:""}`} onClick={()=>si(pl,idx,"s",v)}>{l}</label>
+                    ))}
+                  </div>
+                  {it.s==="n"&&<textarea rows={2} placeholder="Descreva a NC..." style={{marginBottom:8,borderColor:"#fca5a5"}} value={it.o} onChange={e=>si(pl,idx,"o",e.target.value)}/>}
+                  <div style={{display:"flex",alignItems:"center",gap:12}}>
+                    <label className="fl">📷 {it.foto?"Trocar":"Foto"}<input type="file" accept="image/*" style={{display:"none"}} onChange={e=>e.target.files[0]&&sf(pl,idx,e.target.files[0])}/></label>
+                    {it.up>0&&it.up<100&&<span style={{fontSize:12,color:"#2563eb"}}>{it.up}%</span>}
+                    {it.foto&&it.up===100&&<span style={{fontSize:12,color:"#16a34a",fontWeight:600}}>✔ Foto</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+    return(
+      <div className="card fi" style={{padding:24}}>
+        <h3 style={{fontSize:17,fontWeight:700,marginBottom:20}}>✅ Revisao Final</h3>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8,marginBottom:20}}>
+          {PLS.map(p=>{const its=ck[p];const c=its.filter(i=>i.s==="c").length;const t=its.filter(i=>i.s==="c"||i.s==="n").length;const pp=t?Math.round(c/t*100):0;return(
+            <div key={p} style={{textAlign:"center",padding:10,background:"#f8fafc",borderRadius:10,border:"1px solid #e2e8f0"}}>
+              <div style={{fontSize:20}}>{P5[p].e}</div>
+              <div style={{fontSize:10,fontWeight:700,color:"#64748b",marginTop:2}}>{p}</div>
+              <div style={{fontSize:16,fontWeight:800,marginTop:4,color:cx(pp)}}>{pp}%</div>
+              <PBar pct={pp} h={4}/>
+            </div>
+          );})}
+        </div>
+        <div style={{borderRadius:12,padding:16,marginBottom:16,border:`2px solid ${cx(pct)}`,background:pct>=80?"#f0fdf4":pct>=60?"#fefce8":"#fff1f2"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <span style={{fontWeight:700,color:"#1e293b"}}>Conformidade Geral</span>
+            <span style={{fontSize:32,fontWeight:900,color:cx(pct)}}>{pct.toFixed(1)}%</span>
+          </div>
+          <PBar pct={pct} h={14} lbl/>
+        </div>
+        <div style={{background:"#f8fafc",borderRadius:10,padding:12,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,fontSize:13,marginBottom:16}}>
+          <span><b>Setor:</b> {info.setor}</span><span><b>Resp:</b> {info.resp}</span>
+          <span><b>Data:</b> {info.data}</span><span><b>Turno:</b> {info.turno}</span>
+        </div>
+        {ncs.length>0&&<div style={{background:"#fff1f2",border:"1px solid #fecaca",borderRadius:10,padding:14,marginBottom:16}}>
+          <p style={{fontWeight:700,color:"#dc2626",marginBottom:8}}>⚠ {ncs.length} NC(s)</p>
+          {ncs.map((n,i)=><div key={i} style={{fontSize:13,color:"#b91c1c",display:"flex",gap:6,marginBottom:4}}><span>•</span><span>{n.descricao}</span></div>)}
+        </div>}
+        <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontWeight:600,color:"#15803d",fontSize:14}}>🏆 Pontos</span>
+          <span style={{fontSize:26,fontWeight:900,color:"#16a34a"}}>{cp(pct)} pts</span>
+        </div>
+        {erro&&<div style={{marginTop:12,background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:8,padding:10,color:"#dc2626",fontSize:13}}>{erro}</div>}
+      </div>
+    );
+  };
+
+  return(
+    <div className="fi" style={{maxWidth:720,margin:"0 auto",padding:16}}>
+      <Toast toast={toast}/>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
+        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
+        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>Nova Ronda 5S</h2>
+        {info.setor&&<p style={{fontSize:13,color:"#64748b"}}>{info.setor} — {info.data}</p>}</div>
+      </div>
+      <div className="card" style={{padding:16,marginBottom:20}}>
+        <div style={{display:"flex",justifyContent:"space-between",fontSize:13,fontWeight:600,color:"#374151",marginBottom:8}}>
+          <span>{step===0?"📝 Informacoes":step<=PLS.length?`${P5[PLS[step-1]].e} ${P5[PLS[step-1]].label}`:"✅ Revisao"}</span>
+          <span style={{color:"#94a3b8"}}>{step+1}/{tot}</span>
+        </div>
+        <div className="pb"><div className="pf" style={{width:`${((step+1)/tot)*100}%`,background:"#1d4ed8"}}/></div>
+        <div style={{display:"flex",justifyContent:"space-between",marginTop:8}}>
+          {Array.from({length:tot},(_,i)=><div key={i} style={{width:i===step?12:8,height:i===step?12:8,borderRadius:"50%",marginTop:i===step?0:2,background:i<step?"#1d4ed8":i===step?"#60a5fa":"#e2e8f0",transition:"all .2s"}}/>)}
+        </div>
+      </div>
+      {rs()}
+      <div style={{display:"flex",justifyContent:"space-between",marginTop:20,gap:12}}>
+        <button className="btn-sec" onClick={()=>{sErro("");sStep(s=>Math.max(0,s-1));}} disabled={step===0}>← Anterior</button>
+        {step<tot-1
+          ?<button className="btn-p" onClick={()=>{if(step===0&&(!info.setor.trim()||!info.resp.trim())){sErro("⚠ Preencha setor e responsavel!");return;}sErro("");sStep(s=>s+1);}}>Proximo →</button>
+          :<button className="btn-s" onClick={salvar} disabled={salv}>{salv?<><span className="sp"/> Salvando...</>:"✔ Finalizar Ronda"}</button>}
+      </div>
+    </div>
+  );
+};
+
+/* ── MODAL ── */
+const Modal=({ronda,onClose})=>{
+  const pct=ronda.conformidade_percentual||0;
+  const[ncs,sNcs]=useState([]);const[ld,sLd]=useState(false);
+  useEffect(()=>{
+    document.body.style.overflow="hidden";
+    if(!ronda.id)return;
+    sLd(true);
+    window.FS.getNCs(ronda.id).then(d=>sNcs(d||[])).catch(()=>sNcs([])).finally(()=>sLd(false));
+    return()=>{document.body.style.overflow="";};
+  },[ronda.id]);
+  return(
+    <div className="mo" onClick={onClose}>
+      <div className="mb fi" onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
+          <div><h3 style={{fontSize:19,fontWeight:700,color:"#1e293b"}}>📋 Detalhes</h3>
+          <p style={{fontSize:13,color:"#64748b",marginTop:2}}>{ronda.setor} — {ronda.data}{ronda.turno&&` (${ronda.turno})`}</p></div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:28,cursor:"pointer",color:"#94a3b8",lineHeight:1}}>×</button>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20}}>
+          {[{l:"Conformidade",v:`${pct.toFixed(1)}%`,bg:"#eff6ff",c:"#1d4ed8"},{l:"NCs",v:ld?"...":ncs.length,bg:"#fff1f2",c:"#dc2626"},{l:"Pontos",v:ronda.pontos||0,bg:"#f0fdf4",c:"#16a34a"}].map(({l,v,bg,c})=>(
+            <div key={l} style={{textAlign:"center",background:bg,borderRadius:10,padding:12}}>
+              <div style={{fontSize:24,fontWeight:800,color:c}}>{v}</div>
+              <div style={{fontSize:11,color:"#64748b",marginTop:4}}>{l}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:16}}>
+          {PLS.map(p=>{const its=ronda.checklist?.[p]||[];const c=its.filter(i=>i.s==="c"||i.status==="conforme").length;const t=its.filter(i=>i.s==="c"||i.s==="n"||i.status==="conforme"||i.status==="naoconforme").length;const pp=t?Math.round(c/t*100):0;return(
+            <div key={p}><div style={{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:13}}>
+              <span style={{fontWeight:600}}>{P5[p].e} {p}</span>
+              <span style={{fontWeight:700,color:cx(pp)}}>{pp}%</span>
+            </div><PBar pct={pp} h={8}/></div>
+          );})}
+        </div>
+        {ld?<div style={{display:"flex",alignItems:"center",gap:8,padding:10,background:"#f8fafc",borderRadius:8}}><Spin sz={18}/><span style={{fontSize:13,color:"#64748b"}}>Carregando NCs...</span></div>
+        :ncs.length===0?<div style={{padding:12,background:"#f0fdf4",borderRadius:8,border:"1px solid #bbf7d0",textAlign:"center"}}><span style={{fontSize:13,color:"#16a34a",fontWeight:600}}>✅ Nenhuma NC</span></div>
+        :<div style={{maxHeight:180,overflowY:"auto",display:"flex",flexDirection:"column",gap:6}}>
+          {ncs.map((n,i)=><div key={n.id||i} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:10,background:"#fff1f2",borderRadius:8,border:"1px solid #fecaca",gap:8}}>
+            <div style={{flex:1}}><p style={{fontSize:13,fontWeight:600,color:"#1e293b",marginBottom:4}}>{n.descricao}</p>
+            <p style={{fontSize:11,color:"#94a3b8"}}>👤 {n.responsavel||"—"} | 📅 {n.prazo||"—"}</p></div>
+            <BSt s={n.status}/>
+          </div>)}
+        </div>}
+        <div style={{display:"flex",gap:12,borderTop:"1px solid #f1f5f9",paddingTop:16,marginTop:16}}>
+          <button className="btn-sec" onClick={onClose} style={{flex:1}}>Fechar</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── HISTORICO ── */
+const Hist=({go})=>{
+  const[rondas,sR]=useState([]);const[ld,sLd]=useState(true);const[err,sErr]=useState("");
+  const[sel,sSel]=useState(null);const[filtro,sF]=useState("");const[ord,sO]=useState("data");
+  useEffect(()=>{window.FS.getRondas().then(d=>sR(d||[])).catch(e=>sErr("Erro: "+e.message)).finally(()=>sLd(false));},[]);
+  const lista=useMemo(()=>{
+    let l=rondas.filter(r=>!filtro||r.setor?.toLowerCase().includes(filtro.toLowerCase())||r.responsavel?.toLowerCase().includes(filtro.toLowerCase()));
+    if(ord==="pct")l=[...l].sort((a,b)=>(b.conformidade_percentual||0)-(a.conformidade_percentual||0));
+    if(ord==="pts")l=[...l].sort((a,b)=>(b.pontos||0)-(a.pontos||0));
+    return l;
+  },[rondas,filtro,ord]);
+  if(err)return<Err msg={err} back={()=>go("home")}/>;
+  return(
+    <div className="fi" style={{maxWidth:800,margin:"0 auto",padding:16}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
+        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>📁 Historico</h2>
+        <p style={{fontSize:13,color:"#64748b"}}>{rondas.length} ronda(s)</p></div>
+      </div>
+      <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap"}}>
+        <input type="text" placeholder="🔍 Filtrar..." style={{flex:1,minWidth:180}} value={filtro} onChange={e=>sF(e.target.value)}/>
+        <select value={ord} onChange={e=>sO(e.target.value)} style={{width:"auto"}}>
+          <option value="data">📅 Recente</option><option value="pct">📈 Conformidade</option><option value="pts">🏆 Pontos</option>
+        </select>
+        <button className="btn-p" style={{fontSize:13}} onClick={()=>go("nova")}>+ Nova</button>
+      </div>
+      {ld?<div className="card" style={{padding:48,textAlign:"center"}}><Spin/><p style={{marginTop:12,color:"#94a3b8"}}>Carregando...</p></div>
+      :lista.length===0?<div className="card" style={{padding:48,textAlign:"center",color:"#94a3b8"}}><div style={{fontSize:48,marginBottom:12}}>📭</div><p style={{marginBottom:16}}>Nenhuma ronda.</p><button className="btn-p" onClick={()=>go("nova")}>+ Criar primeira</button></div>
+      :<div style={{display:"flex",flexDirection:"column",gap:10}}>
+        {lista.map((r,i)=>{const p=r.conformidade_percentual||0;const nx=lista[i+1];const dlt=nx?p-(nx.conformidade_percentual||0):null;return(
+          <div key={r.id} className="card" style={{padding:16,cursor:"pointer",borderLeft:`4px solid ${cx(p)}`}} onClick={()=>sSel(r)}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
+                  <span style={{fontWeight:700,color:"#1e293b"}}>{r.setor||"—"}</span>
+                  <LPct p={p}/>
+                  {r.turno&&<span style={{fontSize:11,color:"#94a3b8",background:"#f1f5f9",padding:"1px 8px",borderRadius:20}}>{r.turno}</span>}
+                  {dlt!==null&&<span style={{fontSize:12,fontWeight:700,color:dlt>0?"#16a34a":dlt<0?"#dc2626":"#94a3b8"}}>{dlt>0?`▲ +${dlt.toFixed(1)}%`:dlt<0?`▼ ${dlt.toFixed(1)}%`:"= 0%"}</span>}
+                </div>
+                <div style={{fontSize:13,color:"#64748b",marginBottom:8}}>📅 {r.data} | 👤 {r.responsavel||"—"} | ⚠ {r.ncs_total||0} NC | 🏆 {r.pontos||0} pts</div>
+                <div style={{maxWidth:280}}><PBar pct={p} h={8}/></div>
+              </div>
+              <button className="btn-p" style={{fontSize:13,padding:"8px 16px"}} onClick={e=>{e.stopPropagation();sSel(r);}}>Ver →</button>
+            </div>
+          </div>
+        );})}
+      </div>}
+      {sel&&<Modal ronda={sel} onClose={()=>sSel(null)}/>}
+    </div>
+  );
+};
+
+/* ── DASHBOARD ── */
+const Dash=({go})=>{
+  const[rondas,sR]=useState([]);const[kpi,sK]=useState([]);const[ld,sLd]=useState(true);const[err,sErr]=useState("");
+  const rB=useRef(null);const rL=useRef(null);const rRd=useRef(null);const ch=useRef({});
+  useEffect(()=>{Promise.all([window.FS.getRondas(),window.FS.getKPI()]).then(([r,k])=>{sR(r||[]);sK([...(k||[])].reverse());}).catch(e=>sErr("Erro: "+e.message)).finally(()=>sLd(false));},[]);
+  useEffect(()=>{
+    if(ld||err)return;
+    const dl=k=>{if(ch.current[k]){ch.current[k].destroy();ch.current[k]=null;}};
+    if(rB.current&&rondas.length>0){dl("b");try{const s=rondas.slice(-8);const d=s.map(r=>r.conformidade_percentual||0);ch.current["b"]=new Chart(rB.current,{type:"bar",data:{labels:s.map(r=>r.data?.substring(5)||""),datasets:[{data:d,borderRadius:6,borderSkipped:false,backgroundColor:d.map((v,i)=>i===0?"#3b82f6":v>d[i-1]?"#22c55e":v<d[i-1]?"#ef4444":"#3b82f6")}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+"%"}},x:{grid:{display:false}}}}});}catch(e){}}
+    if(rL.current&&kpi.length>0){dl("l");try{ch.current["l"]=new Chart(rL.current,{type:"line",data:{labels:kpi.map(k=>k.id),datasets:[{data:kpi.map(k=>k.total_pontos||0),borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,.1)",fill:true,tension:.4,pointRadius:5,pointBackgroundColor:"#1d4ed8"}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true},x:{grid:{display:false}}}}});}catch(e){}}
+    if(rRd.current&&rondas.length>0){dl("r");try{const u=rondas.slice(-5);const m=PLS.map(p=>{let t=0,c=0;u.forEach(r=>(r.checklist?.[p]||[]).forEach(i=>{if(i.s==="c"||i.s==="n"||i.status==="conforme"||i.status==="naoconforme"){t++;if(i.s==="c"||i.status==="conforme")c++;}}));return t?Math.round(c/t*100):0;});ch.current["r"]=new Chart(rRd.current,{type:"radar",data:{labels:PLS.map(p=>`${P5[p].e} ${p}`),datasets:[{data:m,borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,.15)",pointBackgroundColor:"#1d4ed8",pointRadius:5}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{stepSize:25,callback:v=>v+"%"},grid:{color:"#e2e8f0"}}}}});}catch(e){}}
+    return()=>{ ["b","l","r"].forEach(dl); };
+  },[ld,rondas,kpi,err]);
+  if(ld)return<div style={{minHeight:"80vh",display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{textAlign:"center"}}><Spin sz={48}/><p style={{marginTop:16,color:"#64748b",fontWeight:600}}>Carregando...</p></div></div>;
+  if(err)return<Err msg={err} back={()=>go("home")}/>;
+  const u=rondas.slice(-8);
+  const med=u.length?u.reduce((a,r)=>a+(r.conformidade_percentual||0),0)/u.length:0;
+  const mel=u.length?Math.max(...u.map(r=>r.conformidade_percentual||0)):0;
+  const pio=u.length?Math.min(...u.map(r=>r.conformidade_percentual||0)):0;
+  const tpt=kpi.reduce((a,k)=>a+(k.total_pontos||0),0);
+  return(
+    <div className="fi" style={{maxWidth:960,margin:"0 auto",padding:16}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
+        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>📊 Dashboard 5S</h2>
+        <p style={{fontSize:13,color:"#64748b"}}>{rondas.length} rondas</p></div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
+        {[{e:"📈",l:"Media",v:`${med.toFixed(1)}%`,c:"#1d4ed8",bg:"#eff6ff"},{e:"🏆",l:"Melhor",v:`${mel.toFixed(1)}%`,c:"#16a34a",bg:"#f0fdf4"},{e:"📉",l:"Pior",v:`${pio.toFixed(1)}%`,c:"#dc2626",bg:"#fff1f2"},{e:"⭐",l:"Total Pts",v:tpt,c:"#7c3aed",bg:"#f5f3ff"}].map(({e,l,v,c,bg})=>(
+          <div key={l} className="card" style={{padding:16,textAlign:"center",borderTop:`4px solid ${c}`,background:bg}}>
+            <div style={{fontSize:28}}>{e}</div><div style={{fontSize:22,fontWeight:800,color:c,marginTop:4}}>{v}</div>
+            <div style={{fontSize:11,color:"#64748b",marginTop:2}}>{l}</div>
+          </div>
+        ))}
+      </div>
+      {rondas.length===0?<div style={{background:"#fefce8",border:"1px solid #fde68a",borderRadius:12,padding:24,textAlign:"center"}}><p style={{color:"#92400e",fontWeight:600}}>⚠ Nenhuma ronda ainda!</p><button className="btn-p" style={{marginTop:12}} onClick={()=>go("nova")}>+ Nova Ronda</button></div>:(
+        <>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+            <div className="card" style={{padding:20}}><h3 style={{fontWeight:700,color:"#374151",marginBottom:12}}>📊 Semanal</h3><canvas ref={rB}/></div>
+            <div className="card" style={{padding:20}}><h3 style={{fontWeight:700,color:"#374151",marginBottom:12}}>🕸 Radar por Pilar</h3><canvas ref={rRd}/></div>
+          </div>
+          <div className="card" style={{padding:20}}>
+            <h3 style={{fontWeight:700,color:"#374151",marginBottom:12}}>📅 KPI Mensal</h3>
+            {kpi.length>0?<canvas ref={rL}/>:<p style={{color:"#94a3b8",textAlign:"center",padding:24}}>Sem dados ainda.</p>}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+/* ── NCs ── */
+const NCs=({go})=>{
+  const[ncs,sN]=useState([]);const[ld,sLd]=useState(true);const[err,sErr]=useState("");
+  const[fi,sFi]=useState("todos");const[bk,sBk]=useState("");
+  const{toast,show}=useToast();
+  useEffect(()=>{window.FS.getNCs().then(d=>sN(d||[])).catch(e=>sErr("Erro: "+e.message)).finally(()=>sLd(false));},[]);
+  const mudar=async(id,st)=>{try{await window.FS.atualizarNC(id,{status:st});sN(p=>p.map(n=>n.id===id?{...n,status:st}:n));show(st==="resolvido"?"✔ Resolvida!":"⟳ Em andamento",st==="resolvido"?"success":"info");}catch(e){show("Erro: "+e.message,"error");}};
+  const cnt=useMemo(()=>({todos:ncs.length,aberto:ncs.filter(n=>n.status==="aberto").length,em_andamento:ncs.filter(n=>n.status==="em_andamento").length,resolvido:ncs.filter(n=>n.status==="resolvido").length}),[ncs]);
+  const lista=useMemo(()=>ncs.filter(n=>(fi==="todos"||n.status===fi)&&(!bk||n.descricao?.toLowerCase().includes(bk.toLowerCase())||n.responsavel?.toLowerCase().includes(bk.toLowerCase()))),[ncs,fi,bk]);
+  if(err)return<Err msg={err} back={()=>go("home")}/>;
+  return(
+    <div className="fi" style={{maxWidth:800,margin:"0 auto",padding:16}}>
+      <Toast toast={toast}/>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
+        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
+        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>⚠ Nao Conformidades</h2>
+        <p style={{fontSize:13,color:"#64748b"}}>{cnt.aberto+cnt.em_andamento} abertas | {cnt.resolvido} resolvidas</p></div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:16}}>
+        {[{l:"Total",v:cnt.todos,c:"#64748b"},{l:"Abertas",v:cnt.aberto,c:"#dc2626"},{l:"Andamento",v:cnt.em_andamento,c:"#d97706"},{l:"Resolvidas",v:cnt.resolvido,c:"#16a34a"}].map(({l,v,c})=>(
+          <div key={l} className="card" style={{padding:12,textAlign:"center",borderTop:`3px solid ${c}`}}>
+            <div style={{fontSize:22,fontWeight:800,color:c}}>{v}</div>
+            <div style={{fontSize:11,color:"#64748b"}}>{l}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap"}}>
+        {[{v:"todos",l:"📋 Todos"},{v:"aberto",l:"○ Aberto"},{v:"em_andamento",l:"⟳ Andamento"},{v:"resolvido",l:"✔ Resolvido"}].map(({v,l})=>(
+          <button key={v} onClick={()=>sFi(v)} style={{padding:"6px 14px",borderRadius:20,fontSize:13,fontWeight:600,cursor:"pointer",background:fi===v?"#1d4ed8":"#fff",color:fi===v?"#fff":"#374151",border:fi===v?"2px solid #1d4ed8":"2px solid #e2e8f0"}}>{l} ({cnt[v]??ncs.length})</button>
+        ))}
+      </div>
+      <input type="text" placeholder="🔍 Buscar..." style={{marginBottom:16,maxWidth:360}} value={bk} onChange={e=>sBk(e.target.value)}/>
+      {ld?<div className="card" style={{padding:48,textAlign:"center"}}><Spin/><p style={{marginTop:12,color:"#94a3b8"}}>Carregando...</p></div>
+      :lista.length===0?<div className="card" style={{padding:48,textAlign:"center",color:"#94a3b8"}}><div style={{fontSize:48,marginBottom:12}}>✅</div><p>Nenhuma NC encontrada.</p></div>
+      :<div style={{display:"flex",flexDirection:"column",gap:10}}>
+        {lista.map(n=>(
+          <div key={n.id} className="card" style={{padding:16,borderLeft:`4px solid ${n.status==="resolvido"?"#22c55e":n.status==="em_andamento"?"#eab308":"#ef4444"}`}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8,marginBottom:8}}>
+              <p style={{fontWeight:600,color:"#1e293b",flex:1}}>{n.descricao}</p><BSt s={n.status}/>
+            </div>
+            <p style={{fontSize:13,color:"#64748b",marginBottom:8}}>👤 {n.responsavel||"—"} | 📅 {n.prazo||"—"}</p>
+            {n.status!=="resolvido"&&<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              {n.status==="aberto"&&<button onClick={()=>mudar(n.id,"em_andamento")} style={{fontSize:12,padding:"5px 12px",borderRadius:6,background:"#fef9c3",color:"#92400e",border:"1px solid #fde68a",cursor:"pointer",fontWeight:600}}>⟳ Iniciar</button>}
+              <button onClick={()=>mudar(n.id,"resolvido")} style={{fontSize:12,padding:"5px 12px",borderRadius:6,background:"#dcfce7",color:"#166534",border:"1px solid #bbf7d0",cursor:"pointer",fontWeight:600}}>✔ Resolver</button>
+              <button onClick={()=>{if(confirm("Excluir?")){window.FS.deletarNC(n.id).then(()=>{sN(p=>p.filter(x=>x.id!==n.id));show("Removida","info");}).catch(e=>show("Erro","error"));}}} style={{fontSize:12,padding:"5px 12px",borderRadius:6,background:"#f1f5f9",color:"#64748b",border:"1px solid #e2e8f0",cursor:"pointer",fontWeight:600,marginLeft:"auto"}}>🗑</button>
+            </div>}
+          </div>
+        ))}
+      </div>}
+    </div>
+  );
+};
+
+/* ── RELATÓRIOS ── */
+const Rels=({go})=>{
+  const[rels,sR]=useState([]);const[ld,sLd]=useState(true);const[err,sErr]=useState("");
+  useEffect(()=>{window.FS.getRelatorios().then(d=>sR(d||[])).catch(e=>sErr("Erro: "+e.message)).finally(()=>sLd(false));},[]);
+  if(err)return<Err msg={err} back={()=>go("home")}/>;
+  return(
+    <div className="fi" style={{maxWidth:800,margin:"0 auto",padding:16}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
+        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>📄 Relatorios</h2>
+        <p style={{fontSize:13,color:"#64748b"}}>{rels.length} relatorio(s)</p></div>
+      </div>
+      {ld?<div className="card" style={{padding:48,textAlign:"center"}}><Spin/><p style={{marginTop:12,color:"#94a3b8"}}>Carregando...</p></div>
+      :rels.length===0?<div className="card" style={{padding:48,textAlign:"center",color:"#94a3b8"}}><div style={{fontSize:48,marginBottom:12}}>📭</div><p>Nenhum relatorio ainda.</p></div>
+      :<div style={{display:"flex",flexDirection:"column",gap:10}}>
+        {rels.map(r=>(
+          <div key={r.id} className="card" style={{padding:16,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}>
+            <div><p style={{fontWeight:600,color:"#1e293b"}}>📄 {r.setor||"Relatorio"} — {r.data||"—"}</p>
+            <p style={{fontSize:12,color:"#94a3b8",marginTop:2}}>{fd(r.criadoEm)}</p></div>
+            {r.pdf_url?<a href={r.pdf_url} target="_blank" className="btn-p" style={{fontSize:13,padding:"8px 16px",textDecoration:"none"}}>⬇ Baixar</a>
+            :<span style={{fontSize:12,color:"#94a3b8",fontStyle:"italic"}}>Indisponivel</span>}
+          </div>
+        ))}
+      </div>}
+    </div>
+  );
+};
+
+/* ── APP ROOT ── */
+const NAVS=[{t:"home",e:"🏠",l:"Inicio"},{t:"nova",e:"📋",l:"Nova"},{t:"hist",e:"📁",l:"Historico"},{t:"ncs",e:"⚠",l:"NCs"},{t:"dash",e:"📊",l:"Dashboard"},{t:"rel",e:"📄",l:"Relatorios"}];
+
+const App=()=>{
+  const[tela,sTela]=useState("home");
+  const render=()=>{const p={go:sTela};switch(tela){case"home":return<Home {...p}/>;case"nova":return<Nova {...p}/>;case"hist":return<Hist {...p}/>;case"dash":return<Dash {...p}/>;case"ncs":return<NCs {...p}/>;case"rel":return<Rels {...p}/>;default:return<Home {...p}/>;}}
+  return(
+    <div style={{minHeight:"100vh",background:"#f1f5f9"}}>
+      <header style={{background:"#fff",borderBottom:"1px solid #e2e8f0",padding:"8px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:50,boxShadow:"0 1px 6px rgba(0,0,0,.06)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer"}} onClick={()=>sTela("home")}>
+          <span style={{fontSize:24}}>🏭</span>
+          <div><p style={{fontWeight:700,color:"#1e293b",fontSize:14,lineHeight:1.2}}>Rondas 5S</p>
+          <p style={{fontSize:11,color:"#94a3b8",lineHeight:1.2}}>fir-manutencao</p></div>
+        </div>
+        <nav style={{display:"flex",overflowX:"auto"}}>
+          {NAVS.map(({t,e,l})=><button key={t} onClick={()=>sTela(t)} className={`nt ${tela===t?"active":""}`}>{e} {l}</button>)}
+        </nav>
+      </header>
+      <main style={{paddingBottom:48}}>{render()}</main>
+      <footer style={{textAlign:"center",fontSize:12,color:"#94a3b8",padding:12,borderTop:"1px solid #e2e8f0",background:"#fff"}}>
+        Rondas 5S • fir-manutencao • v2.0 • {new Date().getFullYear()}
+      </footer>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
