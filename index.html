@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
 <title>Rondas 5S</title>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -14,47 +14,143 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:#f1f5f9}
-.btn-p{background:#1d4ed8;color:#fff;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .2s}
-.btn-p:hover{background:#1e40af}
-.btn-s{background:#16a34a;color:#fff;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.btn-sec{background:#6b7280;color:#fff;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-button:disabled{opacity:.5;cursor:not-allowed}
-.card{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-.bg{background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
-.by{background:#fef9c3;color:#ca8a04;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
-.br{background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
-.ph{color:#fff;padding:12px 16px;font-weight:700;font-size:15px;display:flex;justify-content:space-between;align-items:center}
-.seiri{background:#ef4444}.seiton{background:#f97316}.seiso{background:#eab308}.seiketsu{background:#22c55e}.shitsuke{background:#3b82f6}
-.ro{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:6px 12px;border-radius:8px;border:2px solid #e5e7eb;transition:all .15s;user-select:none;font-size:14px;font-weight:500}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+:root{--max-w:960px;--pad:16px;--pad-sm:12px;--rad:12px;--rad-sm:8px;--shadow:0 2px 12px rgba(0,0,0,.08);--header-h:56px}
+@media(min-width:768px){:root{--pad:24px;--pad-sm:16px}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:var(--rad-sm);font-weight:600;font-size:14px;cursor:pointer;border:none;transition:all .2s;white-space:nowrap;min-height:42px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn-p{background:#1d4ed8;color:#fff}.btn-p:hover:not(:disabled){background:#1e40af}
+.btn-s{background:#16a34a;color:#fff}.btn-s:hover:not(:disabled){background:#15803d}
+.btn-sec{background:#6b7280;color:#fff}.btn-sec:hover:not(:disabled){background:#4b5563}
+.btn-warn{background:#d97706;color:#fff}.btn-warn:hover:not(:disabled){background:#b45309}
+.btn-danger{background:#dc2626;color:#fff}.btn-danger:hover:not(:disabled){background:#b91c1c}
+.btn-ghost{background:transparent;color:#374151;border:2px solid #e2e8f0}.btn-ghost:hover{background:#f1f5f9}
+.card{background:#fff;border-radius:var(--rad);box-shadow:var(--shadow)}
+.card-pad{padding:var(--pad)}
+.card-pad-sm{padding:var(--pad-sm)}
+.badge{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.bg{background:#dcfce7;color:#16a34a}.by{background:#fef9c3;color:#ca8a04}.br{background:#fee2e2;color:#dc2626}.bb{background:#eff6ff;color:#1d4ed8}
+.header{background:#fff;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:100;box-shadow:0 1px 6px rgba(0,0,0,.06);height:var(--header-h);display:flex;align-items:center;padding:0 var(--pad-sm);gap:12px}
+.header-brand{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
+.header-brand-text p:first-child{font-weight:700;color:#1e293b;font-size:14px;line-height:1.2}
+.header-brand-text p:last-child{font-size:10px;color:#94a3b8;line-height:1.2}
+.header-nav{display:flex;overflow-x:auto;gap:2px;flex:1;scrollbar-width:none;-ms-overflow-style:none}
+.header-nav::-webkit-scrollbar{display:none}
+.nt{padding:8px 10px;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;color:#6b7280;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;font-size:13px;transition:all .15s;flex-shrink:0;min-height:var(--header-h);display:flex;align-items:center;gap:4px}
+.nt.active{border-bottom-color:#1d4ed8;color:#1d4ed8}
+.nt-label{display:none}
+@media(min-width:400px){.nt-label{display:inline}}
+@media(min-width:600px){.nt{padding:8px 14px;font-size:14px}}
+input,textarea,select{border:1.5px solid #d1d5db;border-radius:var(--rad-sm);padding:10px 12px;width:100%;font-size:15px;background:#fff;color:#1e293b;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+label.lbl{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+.form-row{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:480px){.form-row{grid-template-columns:1fr 1fr}}
+.form-full{grid-column:1/-1}
+.pb{height:10px;border-radius:999px;background:#e5e7eb;overflow:hidden}
+.pf{height:100%;border-radius:999px;transition:width .5s ease}
+.ro{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:8px 14px;border-radius:var(--rad-sm);border:2px solid #e5e7eb;transition:all .15s;user-select:none;font-size:14px;font-weight:500;min-height:40px}
+.ro:active{transform:scale(.97)}
 .rc{border-color:#16a34a;background:#dcfce7;color:#15803d}
 .rn{border-color:#dc2626;background:#fee2e2;color:#b91c1c}
 .ra{border-color:#6b7280;background:#f3f4f6;color:#4b5563}
-input,textarea,select{border:1px solid #d1d5db;border-radius:8px;padding:8px 12px;width:100%;font-size:14px}
-input:focus,textarea:focus,select:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
-.pb{height:10px;border-radius:999px;background:#e5e7eb;overflow:hidden}
-.pf{height:100%;border-radius:999px;transition:width .5s}
-.nt{padding:10px 12px;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;color:#6b7280;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;font-size:14px}
-.nt.active{border-bottom-color:#1d4ed8;color:#1d4ed8}
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
-.mb{background:#fff;border-radius:16px;padding:28px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto}
-.toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:14px 20px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:0 4px 24px rgba(0,0,0,.2);display:flex;align-items:center;gap:10px;animation:su .3s ease}
+.ro-group{display:flex;gap:8px;flex-wrap:wrap}
+.ph{color:#fff;padding:14px 16px;font-weight:700;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ph-badge{font-size:12px;opacity:.9;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px;white-space:nowrap}
+.seiri{background:#ef4444}.seiton{background:#f97316}.seiso{background:#eab308}.seiketsu{background:#22c55e}.shitsuke{background:#3b82f6}
+.fl{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;font-weight:600;padding:8px 14px;border-radius:var(--rad-sm);border:1.5px dashed #93c5fd;background:#f0f9ff;color:#2563eb;transition:all .15s;min-height:38px}
+.fl:hover{background:#dbeafe}.fl:active{transform:scale(.97)}
+.fl-cam{color:#059669;border-color:#6ee7b7;background:#f0fdf4}.fl-cam:hover{background:#dcfce7}
+.foto-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.foto-prev{width:80px;height:80px;object-fit:cover;border-radius:var(--rad-sm);border:2px solid #e2e8f0;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.foto-prev:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+@media(min-width:768px){.foto-prev{width:96px;height:96px}}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:flex;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(2px)}
+.mb{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-height:94vh;overflow-y:auto;animation:slideUp .3s ease}
+@media(min-width:600px){.mo{align-items:center;padding:16px}.mb{border-radius:16px;max-width:640px;padding:28px;animation:fadeIn .2s ease}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9999;padding:12px 20px;border-radius:var(--rad);font-weight:600;font-size:14px;box-shadow:0 4px 24px rgba(0,0,0,.25);display:flex;align-items:center;gap:10px;animation:toastIn .3s ease;max-width:90vw;white-space:nowrap}
+@media(min-width:600px){.toast{bottom:24px;left:auto;right:24px;transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@media(min-width:600px){@keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}}
 .ts{background:#16a34a;color:#fff}.te{background:#dc2626;color:#fff}.ti{background:#1d4ed8;color:#fff}.tw{background:#d97706;color:#fff}
-.fl{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:#2563eb;font-size:13px;font-weight:500;padding:4px 10px;border-radius:6px;border:1px dashed #93c5fd}
 .sp{display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
-@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes su{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-.fi{animation:fi .3s ease}
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#f1f5f9}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:480px){.kpi-grid{grid-template-columns:repeat(4,1fr)}}
+.kpi-card{text-align:center;padding:14px 10px;border-radius:var(--rad);border-top:4px solid}
+.kpi-val{font-size:20px;font-weight:800;line-height:1.2}
+.kpi-lbl{font-size:11px;color:#64748b;margin-top:4px}
+@media(min-width:480px){.kpi-val{font-size:24px}}
+.dash-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:700px){.dash-grid{grid-template-columns:1fr 1fr}}
+.item-card{padding:14px;border-radius:var(--rad);background:#fff;box-shadow:var(--shadow);border-left:4px solid #e2e8f0;transition:box-shadow .15s,transform .15s}
+.item-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.12);transform:translateY(-1px)}
+.item-card.clickable{cursor:pointer}
+.item-card:active{transform:scale(.99)}
+.item-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.item-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:#64748b;margin:6px 0 8px}
+.pilar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(min-width:400px){.pilar-grid{grid-template-columns:repeat(5,1fr)}}
+.log-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px}
+.log-item:last-child{border-bottom:none}
+.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -2px 12px rgba(0,0,0,.08);z-index:90;height:60px;padding:0 4px}
+.bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;cursor:pointer;font-size:10px;font-weight:600;color:#94a3b8;padding:4px 2px;transition:color .15s;min-width:0}
+.bottom-nav button.active{color:#1d4ed8}
+.bottom-nav button span:first-child{font-size:20px}
+@media(min-width:768px){.bottom-nav{display:none}}
+.main-content{padding-bottom:72px}
+@media(min-width:768px){.main-content{padding-bottom:48px}}
+.fi{animation:fadeIn .3s ease}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#f1f5f9}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+.container{max-width:var(--max-w);margin:0 auto;padding:var(--pad)}
+.container-sm{max-width:720px;margin:0 auto;padding:var(--pad)}
+.empty{padding:48px 16px;text-align:center;color:#94a3b8}
+.empty-icon{font-size:52px;margin-bottom:12px}
+.page-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.page-title h2{font-size:20px;font-weight:700;color:#1e293b;line-height:1.2}
+@media(min-width:480px){.page-title h2{font-size:22px}}
+.page-title p{font-size:13px;color:#64748b;margin-top:2px}
+.page-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filter-row input{flex:1;min-width:140px}
+.filter-row select{width:auto;min-width:120px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#374151;border:2px solid #e2e8f0;transition:all .15s;white-space:nowrap}
+.chip.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.ck-item{border:2px solid #e5e7eb;border-radius:10px;padding:14px;transition:all .2s;background:#fff;margin-bottom:10px}
+.ck-item-title{font-weight:600;color:#1e293b;font-size:14px;margin-bottom:10px;line-height:1.4}
+.ck-num{color:#94a3b8;margin-right:4px;font-size:13px}
+.steps{display:flex;justify-content:space-between;margin-top:8px;gap:2px}
+.step-dot{flex:1;height:5px;border-radius:999px;background:#e2e8f0;transition:all .3s}
+.step-dot.done{background:#1d4ed8}.step-dot.current{background:#60a5fa}
+/* ── NC Card clicável ── */
+.nc-card{padding:16px;border-radius:var(--rad);background:#fff;box-shadow:var(--shadow);border-left:4px solid;cursor:pointer;transition:box-shadow .15s,transform .15s}
+.nc-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.15);transform:translateY(-2px)}
+.nc-card:active{transform:scale(.99)}
+/* ── Seção do modal NC ── */
+.nc-section{background:#f8fafc;border-radius:10px;padding:14px;margin-bottom:12px}
+.nc-section-title{font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+/* ── Divider ── */
+.divider{height:1px;background:#f1f5f9;margin:16px 0}
 </style>
 </head>
 <body>
-<div id="root"><div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px"><div style="width:48px;height:48px;border-radius:50%;border:5px solid #e2e8f0;border-top-color:#1d4ed8;animation:spin .7s linear infinite"></div><p style="color:#64748b;font-family:sans-serif;font-weight:600">Carregando...</p></div></div>
+<div id="root">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px">
+    <div style="width:48px;height:48px;border-radius:50%;border:5px solid #e2e8f0;border-top-color:#1d4ed8;animation:spin .7s linear infinite"></div>
+    <p style="color:#64748b;font-family:sans-serif;font-weight:600">Carregando...</p>
+  </div>
+</div>
 
 <script>
-const FB={
+firebase.initializeApp({
   apiKey:"AIzaSyAtnTU8nmF8FEN7E10f3gF9Rzpk-S88nY",
   authDomain:"fir-manutencao.firebaseapp.com",
   databaseURL:"https://fir-manutencao-default-rtdb.firebaseio.com",
@@ -62,91 +158,124 @@ const FB={
   storageBucket:"fir-manutencao.firebasestorage.app",
   messagingSenderId:"584542609290",
   appId:"1:584542609290:web:89b206dd1d746621d47273"
-};
-firebase.initializeApp(FB);
+});
 const db=firebase.firestore();
 const st=firebase.storage();
 const auth=firebase.auth();
 auth.signInAnonymously().catch(e=>console.warn(e.message));
 
-const DEMO={
-  rondas:[
-    {id:"d1",data:"2026-04-28",setor:"Linha 3 CNC",responsavel:"Joao Silva",turno:"manha",conformidade_percentual:87,pontos:61,ncs_total:1,checklist:{}},
-    {id:"d2",data:"2026-04-21",setor:"Area de Solda",responsavel:"Maria Santos",turno:"tarde",conformidade_percentual:65,pontos:45,ncs_total:3,checklist:{}},
-    {id:"d3",data:"2026-04-14",setor:"Almoxarifado",responsavel:"Carlos Lima",turno:"manha",conformidade_percentual:92,pontos:64,ncs_total:0,checklist:{}},
-    {id:"d4",data:"2026-04-07",setor:"Compressores",responsavel:"Ana Ferreira",turno:"noite",conformidade_percentual:74,pontos:51,ncs_total:2,checklist:{}}
-  ],
-  ncs:[
-    {id:"n1",descricao:"Oleo no piso CNC",responsavel:"Joao",prazo:"2026-05-10",status:"aberto",ronda_id:"d1"},
-    {id:"n2",descricao:"Ferramentas sem local",responsavel:"Maria",prazo:"2026-05-08",status:"em_andamento",ronda_id:"d2"},
-    {id:"n3",descricao:"EPI faltando solda",responsavel:"Carlos",prazo:"2026-04-30",status:"resolvido",ronda_id:"d2"},
-    {id:"n4",descricao:"Vazamento compressor 2",responsavel:"Ana",prazo:"2026-05-15",status:"aberto",ronda_id:"d4"}
-  ],
-  kpi:[
-    {id:"2026-01",mes:"2026-01",total_pontos:198},
-    {id:"2026-02",mes:"2026-02",total_pontos:220},
-    {id:"2026-03",mes:"2026-03",total_pontos:263},
-    {id:"2026-04",mes:"2026-04",total_pontos:155}
-  ]
+window.gerarWord=function(ronda,ncs){
+  const P5L={Seiri:"Utilizacao",Seiton:"Organizacao",Seiso:"Limpeza",Seiketsu:"Padronizacao",Shitsuke:"Disciplina"};
+  const PLS=["Seiri","Seiton","Seiso","Seiketsu","Shitsuke"];
+  const pct=Number(ronda.conformidade_percentual||0).toFixed(1);
+  const now=new Date().toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"});
+  let checkHtml="";
+  PLS.forEach(p=>{
+    const itens=ronda.checklist?.[p]||[];
+    const conf=itens.filter(i=>i.s==="c").length;
+    const tot=itens.filter(i=>i.s==="c"||i.s==="n").length;
+    const pp=tot?Math.round(conf/tot*100):0;
+    const cor=pp>=80?"#16a34a":pp>=60?"#ca8a04":"#dc2626";
+    checkHtml+=`<tr><td colspan="4" style="background:#f1f5f9;font-weight:700;color:${cor};padding:8px">${p} — ${P5L[p]} (${pp}%)</td></tr>`;
+    itens.forEach(it=>{
+      const s=it.s==="c"?"Conforme":it.s==="n"?"Nao Conforme":"N/A";
+      const bg=it.s==="c"?"#dcfce7":it.s==="n"?"#fee2e2":"#f3f4f6";
+      const c=it.s==="c"?"#16a34a":it.s==="n"?"#dc2626":"#6b7280";
+      checkHtml+=`<tr><td style="padding:6px 8px">${it.d||""}</td><td style="padding:6px 8px;background:${bg};color:${c};font-weight:600;text-align:center">${s}</td><td style="padding:6px 8px;color:#64748b;font-size:12px">${it.o||""}</td><td style="padding:6px 8px;text-align:center">${it.foto?"✔":""}</td></tr>`;
+    });
+  });
+  let ncsHtml="<tr><td colspan='5' style='text-align:center;color:#16a34a;padding:12px'>Nenhuma NC</td></tr>";
+  if(ncs&&ncs.length>0){ncsHtml="";ncs.forEach((n,i)=>{
+    const s=n.status==="resolvido"?"Resolvido":n.status==="em_andamento"?"Em Andamento":"Aberto";
+    const bg=n.status==="resolvido"?"#dcfce7":n.status==="em_andamento"?"#fef9c3":"#fee2e2";
+    const log=(n.log||[]).map(l=>`<br/><small>• ${l.acao} — ${l.data}${l.obs?" | "+l.obs:""}</small>`).join("");
+    ncsHtml+=`<tr><td style="padding:6px 8px">${i+1}</td><td style="padding:6px 8px">${n.descricao||""}</td><td style="padding:6px 8px">${n.responsavel||"—"}</td><td style="padding:6px 8px">${n.prazo||"—"}</td><td style="padding:6px 8px;background:${bg};font-weight:600">${s}${log}</td></tr>`;
+  });}
+  let resumoHtml="";
+  PLS.forEach(p=>{
+    const its=ronda.checklist?.[p]||[];
+    const c=its.filter(i=>i.s==="c").length,n=its.filter(i=>i.s==="n").length,a=its.filter(i=>i.s==="a").length;
+    const pp=(c+n)?Math.round(c/(c+n)*100):0;
+    const cor=pp>=80?"#16a34a":pp>=60?"#ca8a04":"#dc2626";
+    resumoHtml+=`<tr><td style="padding:6px 8px;font-weight:600">${p} — ${P5L[p]}</td><td style="padding:6px 8px;text-align:center;color:#16a34a;font-weight:700">${c}</td><td style="padding:6px 8px;text-align:center;color:#dc2626;font-weight:700">${n}</td><td style="padding:6px 8px;text-align:center">${a}</td><td style="padding:6px 8px;text-align:center;color:${cor};font-weight:700">${pp}%</td></tr>`;
+  });
+  const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'><title>Relatorio 5S</title>
+<style>body{font-family:Calibri,sans-serif;font-size:11pt}h1{color:#1d4ed8;text-align:center;font-size:20pt}h2{color:#1d4ed8;font-size:13pt;border-bottom:2px solid #1d4ed8;padding-bottom:4px;margin:20px 0 8px}h3{color:#dc2626;font-size:13pt;border-bottom:2px solid #dc2626;padding-bottom:4px;margin:20px 0 8px}table{width:100%;border-collapse:collapse;margin-bottom:16px}th{background:#1d4ed8;color:#fff;padding:8px;text-align:left}td{padding:6px 8px;border:1px solid #e2e8f0}tr:nth-child(even) td{background:#f8fafc}</style>
+</head><body>
+<h1>RELATORIO DE RONDA 5S</h1>
+<p style="text-align:center;color:#64748b">${now}</p><hr/>
+<div style="text-align:center;margin:16px 0">
+<span style="display:inline-block;padding:12px 24px;background:#eff6ff;border-radius:8px;margin:0 8px"><b style="font-size:20pt;color:#1d4ed8">${pct}%</b><br/>Conformidade</span>
+<span style="display:inline-block;padding:12px 24px;background:#f0fdf4;border-radius:8px;margin:0 8px"><b style="font-size:20pt;color:#16a34a">${ronda.pontos||0}</b><br/>Pontos</span>
+<span style="display:inline-block;padding:12px 24px;background:#fff1f2;border-radius:8px;margin:0 8px"><b style="font-size:20pt;color:#dc2626">${ncs?ncs.length:0}</b><br/>NCs</span>
+</div>
+<h2>1. INFORMACOES</h2>
+<table><tr><td style="background:#f1f5f9;font-weight:700;width:30%">Data</td><td>${ronda.data||"—"}</td></tr>
+<tr><td style="background:#f1f5f9;font-weight:700">Setor</td><td>${ronda.setor||"—"}</td></tr>
+<tr><td style="background:#f1f5f9;font-weight:700">Responsavel</td><td>${ronda.responsavel||"—"}</td></tr>
+<tr><td style="background:#f1f5f9;font-weight:700">Turno</td><td>${ronda.turno||"—"}</td></tr>
+<tr><td style="background:#f1f5f9;font-weight:700">Observacoes</td><td>${ronda.observacoes||"—"}</td></tr></table>
+<h2>2. CHECKLIST 5S</h2>
+<table><tr><th style="width:45%">Item</th><th style="width:15%">Resultado</th><th style="width:28%">Observacao</th><th style="width:12%">Foto</th></tr>${checkHtml}</table>
+<h3>3. NAO CONFORMIDADES</h3>
+<table><tr><th>#</th><th>Descricao</th><th>Responsavel</th><th>Prazo</th><th>Status/Log</th></tr>${ncsHtml}</table>
+<h2>4. RESUMO POR PILAR</h2>
+<table><tr><th>Pilar</th><th>Conformes</th><th>Nao Conf.</th><th>N/A</th><th>%</th></tr>${resumoHtml}</table>
+<h2>5. ASSINATURAS</h2>
+<table style="border:none"><tr>
+<td style="border:none;text-align:center;padding:0 16px"><div style="border-top:2px solid #1d4ed8;margin-top:50px;padding-top:8px"><b>${ronda.responsavel||"________________________"}</b><br/><span style="color:#64748b">Responsavel</span><br/><small>${ronda.data||"___/___/______"}</small></div></td>
+<td style="border:none;text-align:center;padding:0 16px"><div style="border-top:2px solid #1d4ed8;margin-top:50px;padding-top:8px"><b>________________________</b><br/><span style="color:#64748b">Supervisor</span><br/><small>___/___/______</small></div></td>
+<td style="border:none;text-align:center;padding:0 16px"><div style="border-top:2px solid #1d4ed8;margin-top:50px;padding-top:8px"><b>________________________</b><br/><span style="color:#64748b">Gestor</span><br/><small>___/___/______</small></div></td>
+</tr></table>
+<hr/><p style="text-align:center;color:#94a3b8;font-size:9pt">Rondas 5S • ${now}</p>
+</body></html>`;
+  const blob=new Blob(['\ufeff'+html],{type:'application/msword'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`ronda_${(ronda.setor||'sem_setor').replace(/\s+/g,'_')}_${ronda.data||'sem_data'}.doc`;
+  a.click();URL.revokeObjectURL(url);
 };
 
 window.FS={
-  async criarRonda(d){
-    const r=await db.collection("rondas").add({...d,criadoEm:firebase.firestore.FieldValue.serverTimestamp()});
-    return r.id;
-  },
+  async criarRonda(d){const r=await db.collection("rondas").add({...d,criadoEm:firebase.firestore.FieldValue.serverTimestamp()});return r.id;},
   async getRondas(){
-    try{
-      const s=await db.collection("rondas").orderBy("criadoEm","desc").get();
-      return s.docs.map(d=>({id:d.id,...d.data()}));
-    }catch(e){console.warn("demo rondas");return DEMO.rondas;}
+    try{const s=await db.collection("rondas").orderBy("criadoEm","desc").get();return s.docs.map(d=>({id:d.id,...d.data()}));}
+    catch(e){try{const s2=await db.collection("rondas").get();return s2.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.data>a.data?1:-1);}catch(e2){return[];}}
   },
-  async criarNC(d){
-    const r=await db.collection("nonconformities").add({...d,status:d.status||"aberto",criadoEm:firebase.firestore.FieldValue.serverTimestamp()});
-    return r.id;
-  },
+  async criarNC(d){const r=await db.collection("nonconformities").add({...d,status:"aberto",log:[{acao:"Aberta",data:new Date().toLocaleString("pt-BR"),obs:""}],criadoEm:firebase.firestore.FieldValue.serverTimestamp()});return r.id;},
   async getNCs(rid=null){
     try{
       let q=db.collection("nonconformities").orderBy("criadoEm","desc");
       if(rid)q=db.collection("nonconformities").where("ronda_id","==",rid).orderBy("criadoEm","desc");
-      const s=await q.get();
-      return s.docs.map(d=>({id:d.id,...d.data()}));
-    }catch(e){return rid?DEMO.ncs.filter(n=>n.ronda_id===rid):DEMO.ncs;}
+      const s=await q.get();return s.docs.map(d=>({id:d.id,...d.data()}));
+    }catch(e){
+      try{let q2=db.collection("nonconformities");if(rid)q2=q2.where("ronda_id","==",rid);const s2=await q2.get();return s2.docs.map(d=>({id:d.id,...d.data()}));}
+      catch(e2){return[];}
+    }
   },
-  async atualizarNC(id,d){await db.collection("nonconformities").doc(id).update({...d,atualizado:firebase.firestore.FieldValue.serverTimestamp()});},
+  async atualizarNC(id,dados,logEntry=null){
+    const upd={...dados,atualizado:firebase.firestore.FieldValue.serverTimestamp()};
+    if(logEntry)upd.log=firebase.firestore.FieldValue.arrayUnion(logEntry);
+    await db.collection("nonconformities").doc(id).update(upd);
+  },
   async deletarNC(id){await db.collection("nonconformities").doc(id).delete();},
-  async criarRelatorio(d){const r=await db.collection("reports").add({...d,criadoEm:firebase.firestore.FieldValue.serverTimestamp()});return r.id;},
-  async getRelatorios(){
-    try{const s=await db.collection("reports").orderBy("criadoEm","desc").get();return s.docs.map(d=>({id:d.id,...d.data()}));}
-    catch(e){return[];}
-  },
-  async incPontos(mes,pts){
-    try{await db.collection("kpi_monthly").doc(mes).set({mes,total_pontos:firebase.firestore.FieldValue.increment(pts),att:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}
-    catch(e){console.warn(e.message);}
-  },
-  async getKPI(){
-    try{const s=await db.collection("kpi_monthly").orderBy("mes","desc").limit(6).get();return s.docs.map(d=>({id:d.id,...d.data()})).reverse();}
-    catch(e){return DEMO.kpi;}
-  },
+  async getRelatorios(){try{const s=await db.collection("reports").orderBy("criadoEm","desc").get();return s.docs.map(d=>({id:d.id,...d.data()}));}catch(e){return[];}},
+  async incPontos(mes,pts){try{await db.collection("kpi_monthly").doc(mes).set({mes,total_pontos:firebase.firestore.FieldValue.increment(pts),att:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});}catch(e){}},
+  async getKPI(){try{const s=await db.collection("kpi_monthly").orderBy("mes","desc").limit(6).get();return s.docs.map(d=>({id:d.id,...d.data()})).reverse();}catch(e){return[];}},
   async uploadFoto(arq,path,onProg){
     if(!arq)return null;
     try{
       const ref=st.ref(path);
       if(onProg){return await new Promise((res,rej)=>{const t=ref.put(arq);t.on("state_changed",s=>onProg(Math.round(s.bytesTransferred/s.totalBytes*100)),rej,async()=>res(await t.snapshot.ref.getDownloadURL()));});}
       await ref.put(arq);return await ref.getDownloadURL();
-    }catch(e){return URL.createObjectURL(arq);}
-  },
-  async uploadBlob(blob,path){
-    try{const ref=st.ref(path);await ref.put(blob);return await ref.getDownloadURL();}
-    catch(e){return null;}
+    }catch(e){return new Promise(res=>{const fr=new FileReader();fr.onload=ev=>res(ev.target.result);fr.readAsDataURL(arq);});}
   }
 };
-console.log("✅ Firebase OK!");
 </script>
 
 <script type="text/babel" data-presets="react">
 const {useState,useEffect,useRef,useCallback,useMemo}=React;
-
 const P5={
   Seiri   :{label:"Seiri — Utilizacao",   cor:"seiri",   e:"🔴",itens:["Ha itens desnecessarios?","Materiais sem uso?","Equipamentos obsoletos removidos?","Documentos desnecessarios?"]},
   Seiton  :{label:"Seiton — Organizacao", cor:"seiton",  e:"🟠",itens:["Ferramentas com local definido?","Materiais organizados?","Etiquetas legiveis?","Layout eficiente?"]},
@@ -155,11 +284,12 @@ const P5={
   Shitsuke:{label:"Shitsuke — Disciplina", cor:"shitsuke",e:"🔵",itens:["Procedimentos seguidos?","Rondas anteriores ok?","Treinamentos 5S feitos?","Melhorias implementadas?"]}
 };
 const PLS=Object.keys(P5);
-
+const RASCUNHO_KEY="ronda5s_v4";
 const cc=ck=>{let t=0,c=0;PLS.forEach(p=>(ck[p]||[]).forEach(i=>{if(i.s==="c"||i.s==="n"){t++;if(i.s==="c")c++;}}));return t?c/t*100:0;};
 const cp=pct=>Math.round(pct*.7);
 const cx=p=>p>=80?"#16a34a":p>=60?"#ca8a04":"#dc2626";
 const fd=ts=>{if(!ts)return"—";if(ts?.toDate)return ts.toDate().toLocaleDateString("pt-BR");return new Date(ts).toLocaleDateString("pt-BR");};
+const agora=()=>new Date().toLocaleString("pt-BR");
 
 const useToast=()=>{
   const[t,sT]=useState(null);const tm=useRef(null);
@@ -168,94 +298,127 @@ const useToast=()=>{
   return{toast:t,show};
 };
 
-const Toast=({toast:t})=>{
-  if(!t)return null;
-  return<div className={`toast t${t.tipo[0]}`}>
-    <span>{{success:"✔",error:"✘",info:"ℹ",warning:"⚠"}[t.tipo]}</span>
-    <span>{t.msg}</span>
-  </div>;
+const Toast=({toast:t})=>t?<div className={`toast t${t.tipo[0]}`}><span>{{success:"✔",error:"✘",info:"ℹ",warning:"⚠"}[t.tipo]}</span><span>{t.msg}</span></div>:null;
+const Spin=({sz=40,c="#3b82f6"})=><div style={{width:sz,height:sz,borderRadius:"50%",border:`${Math.max(3,sz/12)}px solid #e2e8f0`,borderTopColor:c,animation:"spin .7s linear infinite",margin:"0 auto"}}/>;
+const PBar=({pct,h=8,lbl=false})=>(
+  <div>
+    <div className="pb" style={{height:h}}><div className="pf" style={{width:`${Math.min(100,Math.max(0,pct))}%`,background:pct>=80?"#22c55e":pct>=60?"#eab308":"#ef4444"}}/></div>
+    {lbl&&<div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#9ca3af",marginTop:3}}><span>0%</span><span>Meta 80%</span><span>100%</span></div>}
+  </div>
+);
+const BSt=({s})=>s==="resolvido"?<span className="badge bg">✔ Resolvido</span>:s==="em_andamento"?<span className="badge by">⟳ Andamento</span>:<span className="badge br">○ Aberto</span>;
+const LPct=({p})=>p>=80?<span className="badge bg">✔ Boa</span>:p>=60?<span className="badge by">⚠ Regular</span>:<span className="badge br">✘ Critico</span>;
+const Err=({msg,back})=>(
+  <div style={{maxWidth:480,margin:"60px auto",padding:16}}>
+    <div style={{background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:12,padding:32,textAlign:"center"}}>
+      <div style={{fontSize:44,marginBottom:12}}>❌</div>
+      <p style={{color:"#dc2626",fontWeight:600,marginBottom:20}}>{msg}</p>
+      <button className="btn btn-sec" onClick={back}>← Voltar</button>
+    </div>
+  </div>
+);
+const FotoModal=({src,onClose})=>(
+  <div className="mo" onClick={onClose} style={{zIndex:2000,background:"rgba(0,0,0,.92)"}}>
+    <div onClick={e=>e.stopPropagation()} style={{position:"relative",maxWidth:"95vw",maxHeight:"95vh"}}>
+      <img src={src} style={{maxWidth:"100%",maxHeight:"90vh",borderRadius:8,objectFit:"contain"}}/>
+      <button onClick={onClose} style={{position:"absolute",top:-12,right:-12,background:"#dc2626",color:"#fff",border:"none",borderRadius:"50%",width:32,height:32,cursor:"pointer",fontSize:18,fontWeight:700}}>×</button>
+    </div>
+  </div>
+);
+const BotoesFoto=({onFile,temFoto})=>(
+  <div className="foto-btns">
+    <label className="fl fl-cam">📸 {temFoto?"Nova foto":"Tirar foto"}<input type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={e=>e.target.files[0]&&onFile(e.target.files[0])}/></label>
+    <label className="fl">🖼 Galeria<input type="file" accept="image/*" style={{display:"none"}} onChange={e=>e.target.files[0]&&onFile(e.target.files[0])}/></label>
+  </div>
+);
+
+/* ================================================================
+   HOME
+================================================================ */
+const Home=({go})=>{
+  const[temR,setTR]=useState(false);
+  useEffect(()=>{setTR(!!localStorage.getItem(RASCUNHO_KEY));},[]);
+  return(
+    <div className="fi" style={{minHeight:"calc(100vh - var(--header-h))",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 16px"}}>
+      <div style={{textAlign:"center",marginBottom:32}}>
+        <div style={{fontSize:64,marginBottom:12}}>🏭</div>
+        <h1 style={{fontSize:"clamp(20px,5vw,28px)",fontWeight:700,color:"#1e293b"}}>Sistema de Rondas 5S</h1>
+        <p style={{color:"#64748b",marginTop:6,fontSize:"clamp(14px,4vw,17px)"}}>Setor de Manutencao Industrial</p>
+        <p style={{color:"#94a3b8",fontSize:12,marginTop:4}}>{new Date().toLocaleDateString("pt-BR",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}</p>
+      </div>
+      {temR&&(
+        <div style={{background:"#fefce8",border:"2px solid #fde68a",borderRadius:12,padding:16,marginBottom:20,width:"100%",maxWidth:680}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
+            <div><p style={{fontWeight:700,color:"#92400e"}}>📝 Rascunho encontrado!</p><p style={{fontSize:13,color:"#a16207"}}>Voce tem uma ronda nao finalizada.</p></div>
+            <div style={{display:"flex",gap:8}}>
+              <button className="btn btn-p" onClick={()=>go("nova")}>Continuar →</button>
+              <button className="btn btn-ghost" onClick={()=>{localStorage.removeItem(RASCUNHO_KEY);setTR(false);}}>Descartar</button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:14,width:"100%",maxWidth:680}}>
+        {[{e:"📋",l:"Nova Ronda",s:"Iniciar checklist",t:"nova",bg:"#1d4ed8"},{e:"📁",l:"Historico",s:"Rondas anteriores",t:"hist",bg:"#334155"},{e:"📊",l:"Dashboard",s:"Graficos e KPIs",t:"dash",bg:"#16a34a"}].map(({e,l,s,t,bg})=>(
+          <button key={t} onClick={()=>go(t)} className="card"
+            style={{padding:"24px 16px",display:"flex",flexDirection:"column",alignItems:"center",gap:10,background:bg,color:"#fff",cursor:"pointer",border:"none",transition:"transform .2s,box-shadow .2s"}}
+            onMouseEnter={ev=>{ev.currentTarget.style.transform="translateY(-4px)";ev.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,.2)"}}
+            onMouseLeave={ev=>{ev.currentTarget.style.transform="translateY(0)";ev.currentTarget.style.boxShadow=""}}>
+            <span style={{fontSize:"clamp(36px,8vw,48px)"}}>{e}</span>
+            <span style={{fontSize:"clamp(14px,4vw,17px)",fontWeight:700}}>{l}</span>
+            <span style={{fontSize:12,opacity:.8,textAlign:"center"}}>{s}</span>
+          </button>
+        ))}
+      </div>
+      <div className="card" style={{marginTop:20,padding:"10px 16px",width:"100%",maxWidth:680,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,fontSize:12,color:"#94a3b8"}}>
+          <span style={{width:8,height:8,borderRadius:"50%",background:"#22c55e",display:"inline-block"}}/>
+          Firebase — <strong style={{color:"#475569"}}>fir-manutencao</strong>
+        </div>
+        <div style={{display:"flex",gap:12}}>
+          <button onClick={()=>go("ncs")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:"#ef4444",fontWeight:600}}>⚠ NCs</button>
+          <button onClick={()=>go("rel")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:"#2563eb",fontWeight:600}}>📄 Relatorios</button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-const Spin=({sz=40,c="#3b82f6"})=>(
-  <div style={{width:sz,height:sz,borderRadius:"50%",border:`${Math.max(3,sz/12)}px solid #e2e8f0`,borderTopColor:c,animation:"spin .7s linear infinite",margin:"0 auto"}}/>
-);
-
-const PBar=({pct,h=10,lbl=false})=>(
-  <div><div className="pb" style={{height:h}}>
-    <div className="pf" style={{width:`${Math.min(100,Math.max(0,pct))}%`,background:pct>=80?"#22c55e":pct>=60?"#eab308":"#ef4444"}}/>
-  </div>{lbl&&<div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#9ca3af",marginTop:2}}><span>0%</span><span>Meta:80%</span><span>100%</span></div>}</div>
-);
-
-const BSt=({s})=>s==="resolvido"?<span className="bg">✔ Resolvido</span>:s==="em_andamento"?<span className="by">⟳ Em Andamento</span>:<span className="br">○ Aberto</span>;
-const LPct=({p})=>p>=80?<span className="bg">✔ Boa</span>:p>=60?<span className="by">⚠ Regular</span>:<span className="br">✘ Critico</span>;
-const Err=({msg,back})=>(
-  <div style={{maxWidth:500,margin:"60px auto",padding:16}}>
-    <div style={{background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:12,padding:32,textAlign:"center"}}>
-      <div style={{fontSize:40,marginBottom:12}}>❌</div>
-      <p style={{color:"#dc2626",fontWeight:600,marginBottom:16}}>{msg}</p>
-      <button className="btn-sec" onClick={back}>← Voltar</button>
-    </div>
-  </div>
-);
-
-/* ── TELA INICIAL ── */
-const Home=({go})=>(
-  <div className="fi" style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24}}>
-    <div style={{textAlign:"center",marginBottom:40}}>
-      <div style={{fontSize:72,marginBottom:16}}>🏭</div>
-      <h1 style={{fontSize:28,fontWeight:700,color:"#1e293b"}}>Sistema de Rondas 5S</h1>
-      <p style={{color:"#64748b",marginTop:8,fontSize:18}}>Setor de Manutencao Industrial</p>
-      <p style={{color:"#94a3b8",fontSize:13,marginTop:4}}>{new Date().toLocaleDateString("pt-BR",{weekday:"long",year:"numeric",month:"long",day:"numeric"})}</p>
-    </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:20,width:"100%",maxWidth:720}}>
-      {[{e:"📋",l:"Nova Ronda",s:"Iniciar checklist",t:"nova",bg:"#1d4ed8"},{e:"📁",l:"Historico",s:"Rondas anteriores",t:"hist",bg:"#334155"},{e:"📊",l:"Dashboard",s:"Graficos e KPIs",t:"dash",bg:"#16a34a"}].map(({e,l,s,t,bg})=>(
-        <button key={t} onClick={()=>go(t)} className="card" style={{padding:32,display:"flex",flexDirection:"column",alignItems:"center",gap:12,background:bg,color:"#fff",cursor:"pointer",border:"none",transition:"transform .2s"}} onMouseEnter={ev=>ev.currentTarget.style.transform="translateY(-4px)"} onMouseLeave={ev=>ev.currentTarget.style.transform="translateY(0)"}>
-          <span style={{fontSize:48}}>{e}</span><span style={{fontSize:18,fontWeight:700}}>{l}</span><span style={{fontSize:13,opacity:.8}}>{s}</span>
-        </button>
-      ))}
-    </div>
-    <div className="card" style={{marginTop:24,padding:"12px 20px",width:"100%",maxWidth:720,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
-      <div style={{display:"flex",alignItems:"center",gap:8,fontSize:12,color:"#94a3b8"}}>
-        <span style={{width:8,height:8,borderRadius:"50%",background:"#22c55e",display:"inline-block"}}/>
-        Firebase — <strong style={{color:"#475569"}}>fir-manutencao</strong>
-      </div>
-      <div style={{display:"flex",gap:16}}>
-        <button onClick={()=>go("ncs")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:"#ef4444",fontWeight:600}}>⚠ NCs →</button>
-        <button onClick={()=>go("rel")} style={{background:"none",border:"none",cursor:"pointer",fontSize:12,color:"#2563eb",fontWeight:600}}>📄 Relatorios →</button>
-      </div>
-    </div>
-  </div>
-);
-
-/* ── NOVA RONDA ── */
+/* ================================================================
+   NOVA RONDA
+================================================================ */
 const Nova=({go})=>{
   const tot=PLS.length+2;
-  const[step,sStep]=useState(0);
-  const[info,sInfo]=useState({setor:"",resp:"",turno:"manha",data:new Date().toISOString().split("T")[0],obs:""});
-  const[ck,sCk]=useState(()=>{const o={};PLS.forEach(p=>{o[p]=P5[p].itens.map(d=>({d,s:"",o:"",foto:null,up:0}));});return o;});
-  const[ncs,sNcs]=useState([]);
-  const[salv,sSalv]=useState(false);
-  const[erro,sErro]=useState("");
+  const initR=()=>{try{const r=localStorage.getItem(RASCUNHO_KEY);if(r)return JSON.parse(r);}catch(e){}return null;};
+  const rasc=initR();
+  const[step,sStep]=useState(rasc?.step||0);
+  const[info,sInfo]=useState(rasc?.info||{setor:"",resp:"",turno:"manha",data:new Date().toISOString().split("T")[0],obs:""});
+  const[ck,sCk]=useState(rasc?.ck||(()=>{const o={};PLS.forEach(p=>{o[p]=P5[p].itens.map(d=>({d,s:"",o:"",foto:null,up:0}));});return o;}));
+  const[ncs,sNcs]=useState(rasc?.ncs||[]);
+  const[salv,sSalv]=useState(false);const[erro,sErro]=useState("");
+  const[fotoAmp,sFotoAmp]=useState(null);
   const{toast,show}=useToast();
   const pct=useMemo(()=>cc(ck),[ck]);
-
+  useEffect(()=>{localStorage.setItem(RASCUNHO_KEY,JSON.stringify({step,info,ck,ncs}));},[step,info,ck,ncs]);
   const si=useCallback((p,i,k,v)=>{
     sCk(prev=>{
       const u={...prev,[p]:prev[p].map((it,x)=>x===i?{...it,[k]:v}:it)};
       if(k==="s"){
-        if(v==="n") sNcs(ns=>ns.find(n=>n._p===p&&n._i===i)?ns:[...ns,{_p:p,_i:i,descricao:`NC — ${P5[p].itens[i]}`,responsavel:info.resp,prazo:"",status:"aberto",obs:""}]);
+        if(v==="n")sNcs(ns=>ns.find(n=>n._p===p&&n._i===i)?ns:[...ns,{_p:p,_i:i,descricao:`NC — ${P5[p].itens[i]}`,responsavel:info.resp,prazo:"",status:"aberto"}]);
         else sNcs(ns=>ns.filter(n=>!(n._p===p&&n._i===i)));
       }
       return u;
     });
   },[info.resp]);
-
   const sf=useCallback(async(p,i,arq)=>{
-    if(!arq)return;show("📷 Enviando...","info");
-    try{const url=await window.FS.uploadFoto(arq,`rondas/${Date.now()}_${arq.name}`,pv=>si(p,i,"up",pv));si(p,i,"foto",url);si(p,i,"up",100);show("✔ Foto!","success");}
-    catch(e){show("Erro upload","error");}
+    if(!arq)return;show("📷 Processando...","info");
+    const reader=new FileReader();
+    reader.onload=async(e)=>{
+      const local=e.target.result;si(p,i,"foto",local);si(p,i,"up",30);
+      try{const url=await window.FS.uploadFoto(arq,`rondas/${Date.now()}_${arq.name}`,pv=>si(p,i,"up",Math.max(30,pv)));si(p,i,"foto",url||local);si(p,i,"up",100);show("✔ Foto salva!","success");}
+      catch(err){si(p,i,"up",100);show("✔ Foto salva!","success");}
+    };
+    reader.readAsDataURL(arq);
   },[show,si]);
-
   const salvar=async()=>{
     if(!info.setor.trim()){sErro("⚠ Informe o setor!");return;}
     if(!info.resp.trim()){sErro("⚠ Informe o responsavel!");return;}
@@ -263,29 +426,29 @@ const Nova=({go})=>{
     try{
       const pts=cp(pct);
       const rid=await window.FS.criarRonda({setor:info.setor,responsavel:info.resp,turno:info.turno,data:info.data,observacoes:info.obs,checklist:ck,conformidade_percentual:pct,pontos:pts,ncs_total:ncs.length,status:"finalizada"});
-      for(const nc of ncs){const{_p,_i,...n}=nc;await window.FS.criarNC({...n,ronda_id:rid});}
+      const ncsSalvas=[];
+      for(const nc of ncs){const{_p,_i,...n}=nc;const id=await window.FS.criarNC({...n,ronda_id:rid});ncsSalvas.push({id,...n,ronda_id:rid});}
       await window.FS.incPontos(info.data.substring(0,7),pts);
-      show("✔ Ronda salva!","success");
+      try{window.gerarWord({setor:info.setor,responsavel:info.resp,turno:info.turno,data:info.data,observacoes:info.obs,checklist:ck,conformidade_percentual:pct,pontos:pts},ncsSalvas);}catch(ew){}
+      show("✔ Ronda salva!","success");localStorage.removeItem(RASCUNHO_KEY);
       setTimeout(()=>go("hist"),2000);
     }catch(e){sErro("Erro: "+e.message);show("Erro!","error");}
     sSalv(false);
   };
-
   const rs=()=>{
     if(step===0)return(
-      <div className="card fi" style={{padding:24}}>
-        <h3 style={{fontSize:17,fontWeight:700,marginBottom:20,color:"#1e293b"}}>📝 Informacoes da Ronda</h3>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-          {[{l:"Setor / Maquina *",k:"setor",t:"text",p:"Ex: Linha 3"},{l:"Responsavel *",k:"resp",t:"text",p:"Nome"},{l:"Data",k:"data",t:"date",p:""}].map(({l,k,t,p})=>(
-            <div key={k}><label style={{display:"block",fontSize:13,fontWeight:600,color:"#374151",marginBottom:6}}>{l}</label>
-            <input type={t} placeholder={p} value={info[k]} onChange={e=>sInfo(v=>({...v,[k]:e.target.value}))}/></div>
-          ))}
-          <div><label style={{display:"block",fontSize:13,fontWeight:600,color:"#374151",marginBottom:6}}>Turno</label>
-          <select value={info.turno} onChange={e=>sInfo(v=>({...v,turno:e.target.value}))}>
-            <option value="manha">🌅 Manha</option><option value="tarde">☀️ Tarde</option><option value="noite">🌙 Noite</option>
-          </select></div>
-          <div style={{gridColumn:"1/-1"}}><label style={{display:"block",fontSize:13,fontWeight:600,color:"#374151",marginBottom:6}}>Observacoes</label>
-          <textarea rows={3} value={info.obs} onChange={e=>sInfo(v=>({...v,obs:e.target.value}))}/></div>
+      <div className="card card-pad fi">
+        <h3 style={{fontSize:17,fontWeight:700,marginBottom:18,color:"#1e293b"}}>📝 Informacoes da Ronda</h3>
+        <div className="form-row">
+          <div><label className="lbl">Setor / Maquina *</label><input type="text" placeholder="Ex: Linha 3 CNC" value={info.setor} onChange={e=>sInfo(v=>({...v,setor:e.target.value}))}/></div>
+          <div><label className="lbl">Responsavel *</label><input type="text" placeholder="Nome completo" value={info.resp} onChange={e=>sInfo(v=>({...v,resp:e.target.value}))}/></div>
+          <div><label className="lbl">Data</label><input type="date" value={info.data} onChange={e=>sInfo(v=>({...v,data:e.target.value}))}/></div>
+          <div><label className="lbl">Turno</label>
+            <select value={info.turno} onChange={e=>sInfo(v=>({...v,turno:e.target.value}))}>
+              <option value="manha">🌅 Manha</option><option value="tarde">☀️ Tarde</option><option value="noite">🌙 Noite</option>
+            </select>
+          </div>
+          <div className="form-full"><label className="lbl">Observacoes</label><textarea rows={3} value={info.obs} onChange={e=>sInfo(v=>({...v,obs:e.target.value}))} placeholder="Observacoes gerais..."/></div>
         </div>
         {erro&&<div style={{marginTop:12,background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:8,padding:10,color:"#dc2626",fontSize:13}}>{erro}</div>}
       </div>
@@ -295,29 +458,35 @@ const Nova=({go})=>{
       return(
         <div className="card fi" style={{overflow:"hidden"}}>
           <div className={`ph ${pd.cor}`}>
-            <span>{pd.e} {pd.label}</span>
-            <span style={{fontSize:13,opacity:.85,background:"rgba(255,255,255,.2)",padding:"2px 10px",borderRadius:20}}>
-              {ck[pl].filter(i=>i.s!=="").length}/{ck[pl].length} ✔
-            </span>
+            <span style={{fontSize:"clamp(13px,4vw,15px)"}}>{pd.e} {pd.label}</span>
+            <span className="ph-badge">{ck[pl].filter(i=>i.s!=="").length}/{ck[pl].length}</span>
           </div>
-          <div style={{padding:16,display:"flex",flexDirection:"column",gap:12}}>
+          <div style={{padding:"12px 14px"}}>
             {ck[pl].map((it,idx)=>{
               const bc=it.s==="c"?"#16a34a":it.s==="n"?"#dc2626":it.s==="a"?"#9ca3af":"#e5e7eb";
               const bg=it.s==="c"?"#f0fdf4":it.s==="n"?"#fff1f2":it.s==="a"?"#f9fafb":"#fff";
               return(
-                <div key={idx} style={{border:`2px solid ${bc}`,borderRadius:10,padding:14,background:bg}}>
-                  <p style={{fontWeight:600,color:"#1e293b",fontSize:14,marginBottom:10}}><span style={{color:"#94a3b8",marginRight:4}}>{idx+1}.</span>{it.d}</p>
-                  <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:8}}>
-                    {[{v:"c",l:"✔ Conforme",cl:"rc"},{v:"n",l:"✘ Nao Conforme",cl:"rn"},{v:"a",l:"— N/A",cl:"ra"}].map(({v,l,cl})=>(
+                <div key={idx} className="ck-item" style={{borderColor:bc,background:bg}}>
+                  <p className="ck-item-title"><span className="ck-num">{idx+1}.</span>{it.d}</p>
+                  <div className="ro-group" style={{marginBottom:10}}>
+                    {[{v:"c",l:"✔ Conforme",cl:"rc"},{v:"n",l:"✘ NC",cl:"rn"},{v:"a",l:"N/A",cl:"ra"}].map(({v,l,cl})=>(
                       <label key={v} className={`ro ${it.s===v?cl:""}`} onClick={()=>si(pl,idx,"s",v)}>{l}</label>
                     ))}
                   </div>
-                  {it.s==="n"&&<textarea rows={2} placeholder="Descreva a NC..." style={{marginBottom:8,borderColor:"#fca5a5"}} value={it.o} onChange={e=>si(pl,idx,"o",e.target.value)}/>}
-                  <div style={{display:"flex",alignItems:"center",gap:12}}>
-                    <label className="fl">📷 {it.foto?"Trocar":"Foto"}<input type="file" accept="image/*" style={{display:"none"}} onChange={e=>e.target.files[0]&&sf(pl,idx,e.target.files[0])}/></label>
-                    {it.up>0&&it.up<100&&<span style={{fontSize:12,color:"#2563eb"}}>{it.up}%</span>}
-                    {it.foto&&it.up===100&&<span style={{fontSize:12,color:"#16a34a",fontWeight:600}}>✔ Foto</span>}
-                  </div>
+                  {it.s==="n"&&<textarea rows={2} placeholder="Descreva a NC..." style={{marginBottom:10,borderColor:"#fca5a5"}} value={it.o} onChange={e=>si(pl,idx,"o",e.target.value)}/>}
+                  <BotoesFoto temFoto={!!it.foto} onFile={arq=>sf(pl,idx,arq)}/>
+                  {it.up>0&&it.up<100&&(
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginTop:8}}>
+                      <div style={{flex:1,height:5,background:"#e2e8f0",borderRadius:3}}><div style={{width:`${it.up}%`,height:"100%",background:"#3b82f6",borderRadius:3,transition:"width .3s"}}/></div>
+                      <span style={{fontSize:12,color:"#2563eb",fontWeight:600}}>{it.up}%</span>
+                    </div>
+                  )}
+                  {it.foto&&(
+                    <div style={{marginTop:10,display:"flex",alignItems:"center",gap:10}}>
+                      <img src={it.foto} className="foto-prev" onClick={()=>sFotoAmp(it.foto)}/>
+                      <div><p style={{fontSize:12,color:"#16a34a",fontWeight:600}}>✔ Foto registrada</p><p style={{fontSize:11,color:"#94a3b8"}}>Toque para ampliar</p></div>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -326,75 +495,71 @@ const Nova=({go})=>{
       );
     }
     return(
-      <div className="card fi" style={{padding:24}}>
-        <h3 style={{fontSize:17,fontWeight:700,marginBottom:20}}>✅ Revisao Final</h3>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8,marginBottom:20}}>
+      <div className="card card-pad fi">
+        <h3 style={{fontSize:17,fontWeight:700,marginBottom:18}}>✅ Revisao Final</h3>
+        <div className="pilar-grid" style={{marginBottom:18}}>
           {PLS.map(p=>{const its=ck[p];const c=its.filter(i=>i.s==="c").length;const t=its.filter(i=>i.s==="c"||i.s==="n").length;const pp=t?Math.round(c/t*100):0;return(
-            <div key={p} style={{textAlign:"center",padding:10,background:"#f8fafc",borderRadius:10,border:"1px solid #e2e8f0"}}>
-              <div style={{fontSize:20}}>{P5[p].e}</div>
-              <div style={{fontSize:10,fontWeight:700,color:"#64748b",marginTop:2}}>{p}</div>
-              <div style={{fontSize:16,fontWeight:800,marginTop:4,color:cx(pp)}}>{pp}%</div>
-              <PBar pct={pp} h={4}/>
+            <div key={p} style={{textAlign:"center",padding:"10px 6px",background:"#f8fafc",borderRadius:10,border:"1px solid #e2e8f0"}}>
+              <div style={{fontSize:18}}>{P5[p].e}</div><div style={{fontSize:9,fontWeight:700,color:"#64748b",marginTop:2}}>{p}</div>
+              <div style={{fontSize:15,fontWeight:800,marginTop:3,color:cx(pp)}}>{pp}%</div><PBar pct={pp} h={4}/>
             </div>
           );})}
         </div>
-        <div style={{borderRadius:12,padding:16,marginBottom:16,border:`2px solid ${cx(pct)}`,background:pct>=80?"#f0fdf4":pct>=60?"#fefce8":"#fff1f2"}}>
+        <div style={{borderRadius:12,padding:16,marginBottom:14,border:`2px solid ${cx(pct)}`,background:pct>=80?"#f0fdf4":pct>=60?"#fefce8":"#fff1f2"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <span style={{fontWeight:700,color:"#1e293b"}}>Conformidade Geral</span>
-            <span style={{fontSize:32,fontWeight:900,color:cx(pct)}}>{pct.toFixed(1)}%</span>
+            <span style={{fontWeight:700,fontSize:15}}>Conformidade Geral</span>
+            <span style={{fontSize:"clamp(24px,6vw,32px)",fontWeight:900,color:cx(pct)}}>{pct.toFixed(1)}%</span>
           </div>
-          <PBar pct={pct} h={14} lbl/>
+          <PBar pct={pct} h={12} lbl/>
         </div>
-        <div style={{background:"#f8fafc",borderRadius:10,padding:12,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,fontSize:13,marginBottom:16}}>
-          <span><b>Setor:</b> {info.setor}</span><span><b>Resp:</b> {info.resp}</span>
-          <span><b>Data:</b> {info.data}</span><span><b>Turno:</b> {info.turno}</span>
+        {ncs.length>0&&<div style={{background:"#fff1f2",border:"1px solid #fecaca",borderRadius:10,padding:14,marginBottom:14}}><p style={{fontWeight:700,color:"#dc2626",marginBottom:8}}>⚠ {ncs.length} NC(s)</p>{ncs.map((n,i)=><div key={i} style={{fontSize:13,color:"#b91c1c",display:"flex",gap:6,marginBottom:3}}><span>•</span><span>{n.descricao}</span></div>)}</div>}
+        <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:12,display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <span style={{fontWeight:600,color:"#15803d"}}>🏆 Pontos</span>
+          <span style={{fontSize:"clamp(22px,6vw,28px)",fontWeight:900,color:"#16a34a"}}>{cp(pct)} pts</span>
         </div>
-        {ncs.length>0&&<div style={{background:"#fff1f2",border:"1px solid #fecaca",borderRadius:10,padding:14,marginBottom:16}}>
-          <p style={{fontWeight:700,color:"#dc2626",marginBottom:8}}>⚠ {ncs.length} NC(s)</p>
-          {ncs.map((n,i)=><div key={i} style={{fontSize:13,color:"#b91c1c",display:"flex",gap:6,marginBottom:4}}><span>•</span><span>{n.descricao}</span></div>)}
-        </div>}
-        <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:10,padding:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{fontWeight:600,color:"#15803d",fontSize:14}}>🏆 Pontos</span>
-          <span style={{fontSize:26,fontWeight:900,color:"#16a34a"}}>{cp(pct)} pts</span>
-        </div>
+        <div style={{background:"#eff6ff",borderRadius:8,padding:10,fontSize:13,color:"#1d4ed8"}}>📄 Relatorio Word sera gerado ao finalizar.</div>
         {erro&&<div style={{marginTop:12,background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:8,padding:10,color:"#dc2626",fontSize:13}}>{erro}</div>}
       </div>
     );
   };
-
   return(
-    <div className="fi" style={{maxWidth:720,margin:"0 auto",padding:16}}>
+    <div className="fi container-sm">
       <Toast toast={toast}/>
-      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
-        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
-        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>Nova Ronda 5S</h2>
-        {info.setor&&<p style={{fontSize:13,color:"#64748b"}}>{info.setor} — {info.data}</p>}</div>
+      {fotoAmp&&<FotoModal src={fotoAmp} onClose={()=>sFotoAmp(null)}/>}
+      <div className="page-header">
+        <button className="btn btn-sec" style={{padding:"8px 14px",fontSize:13}} onClick={()=>go("home")}>← Voltar</button>
+        <div className="page-title"><h2>Nova Ronda 5S</h2>{info.setor&&<p>{info.setor} — {info.data}</p>}</div>
+        <span style={{marginLeft:"auto",background:"#f0fdf4",borderRadius:8,padding:"4px 10px",fontSize:11,color:"#16a34a",fontWeight:600}}>💾 Auto-salvo</span>
       </div>
-      <div className="card" style={{padding:16,marginBottom:20}}>
-        <div style={{display:"flex",justifyContent:"space-between",fontSize:13,fontWeight:600,color:"#374151",marginBottom:8}}>
+      <div className="card card-pad-sm" style={{marginBottom:16}}>
+        <div style={{display:"flex",justifyContent:"space-between",fontSize:13,fontWeight:600,marginBottom:8}}>
           <span>{step===0?"📝 Informacoes":step<=PLS.length?`${P5[PLS[step-1]].e} ${P5[PLS[step-1]].label}`:"✅ Revisao"}</span>
           <span style={{color:"#94a3b8"}}>{step+1}/{tot}</span>
         </div>
-        <div className="pb"><div className="pf" style={{width:`${((step+1)/tot)*100}%`,background:"#1d4ed8"}}/></div>
-        <div style={{display:"flex",justifyContent:"space-between",marginTop:8}}>
-          {Array.from({length:tot},(_,i)=><div key={i} style={{width:i===step?12:8,height:i===step?12:8,borderRadius:"50%",marginTop:i===step?0:2,background:i<step?"#1d4ed8":i===step?"#60a5fa":"#e2e8f0",transition:"all .2s"}}/>)}
+        <PBar pct={((step+1)/tot)*100} h={8}/>
+        <div className="steps" style={{marginTop:8}}>
+          {Array.from({length:tot},(_,i)=><div key={i} className={`step-dot ${i<step?"done":i===step?"current":""}`}/>)}
         </div>
       </div>
       {rs()}
-      <div style={{display:"flex",justifyContent:"space-between",marginTop:20,gap:12}}>
-        <button className="btn-sec" onClick={()=>{sErro("");sStep(s=>Math.max(0,s-1));}} disabled={step===0}>← Anterior</button>
+      <div style={{display:"flex",justifyContent:"space-between",marginTop:16,gap:10}}>
+        <button className="btn btn-sec" style={{flex:1}} onClick={()=>{sErro("");sStep(s=>Math.max(0,s-1));}} disabled={step===0}>← Anterior</button>
         {step<tot-1
-          ?<button className="btn-p" onClick={()=>{if(step===0&&(!info.setor.trim()||!info.resp.trim())){sErro("⚠ Preencha setor e responsavel!");return;}sErro("");sStep(s=>s+1);}}>Proximo →</button>
-          :<button className="btn-s" onClick={salvar} disabled={salv}>{salv?<><span className="sp"/> Salvando...</>:"✔ Finalizar Ronda"}</button>}
+          ?<button className="btn btn-p" style={{flex:2}} onClick={()=>{if(step===0&&(!info.setor.trim()||!info.resp.trim())){sErro("⚠ Preencha setor e responsavel!");return;}sErro("");sStep(s=>s+1);}}>Proximo →</button>
+          :<button className="btn btn-s" style={{flex:2}} onClick={salvar} disabled={salv}>{salv?<><span className="sp"/> Salvando...</>:"✔ Finalizar e Gerar Word"}</button>}
       </div>
     </div>
   );
 };
 
-/* ── MODAL ── */
-const Modal=({ronda,onClose})=>{
+/* ================================================================
+   MODAL RONDA
+================================================================ */
+const ModalRonda=({ronda,onClose})=>{
   const pct=ronda.conformidade_percentual||0;
   const[ncs,sNcs]=useState([]);const[ld,sLd]=useState(false);
+  const[fotoAmp,sFotoAmp]=useState(null);
+  const{toast,show}=useToast();
   useEffect(()=>{
     document.body.style.overflow="hidden";
     if(!ronda.id)return;
@@ -404,46 +569,53 @@ const Modal=({ronda,onClose})=>{
   },[ronda.id]);
   return(
     <div className="mo" onClick={onClose}>
-      <div className="mb fi" onClick={e=>e.stopPropagation()}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
-          <div><h3 style={{fontSize:19,fontWeight:700,color:"#1e293b"}}>📋 Detalhes</h3>
-          <p style={{fontSize:13,color:"#64748b",marginTop:2}}>{ronda.setor} — {ronda.data}{ronda.turno&&` (${ronda.turno})`}</p></div>
-          <button onClick={onClose} style={{background:"none",border:"none",fontSize:28,cursor:"pointer",color:"#94a3b8",lineHeight:1}}>×</button>
+      <div className="mb" onClick={e=>e.stopPropagation()}>
+        <Toast toast={toast}/>
+        {fotoAmp&&<FotoModal src={fotoAmp} onClose={()=>sFotoAmp(null)}/>}
+        <div style={{width:40,height:4,background:"#e2e8f0",borderRadius:2,margin:"0 auto 16px"}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
+          <div><h3 style={{fontSize:17,fontWeight:700,color:"#1e293b"}}>📋 Detalhes</h3><p style={{fontSize:13,color:"#64748b",marginTop:2}}>{ronda.setor} — {ronda.data} {ronda.turno&&`(${ronda.turno})`}</p></div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:28,cursor:"pointer",color:"#94a3b8",lineHeight:1,padding:"0 4px"}}>×</button>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:20}}>
-          {[{l:"Conformidade",v:`${pct.toFixed(1)}%`,bg:"#eff6ff",c:"#1d4ed8"},{l:"NCs",v:ld?"...":ncs.length,bg:"#fff1f2",c:"#dc2626"},{l:"Pontos",v:ronda.pontos||0,bg:"#f0fdf4",c:"#16a34a"}].map(({l,v,bg,c})=>(
-            <div key={l} style={{textAlign:"center",background:bg,borderRadius:10,padding:12}}>
-              <div style={{fontSize:24,fontWeight:800,color:c}}>{v}</div>
-              <div style={{fontSize:11,color:"#64748b",marginTop:4}}>{l}</div>
-            </div>
+        <div className="kpi-grid" style={{marginBottom:16}}>
+          {[{l:"Conformidade",v:`${pct.toFixed(1)}%`,bg:"#eff6ff",c:"#1d4ed8"},{l:"NCs",v:ld?"...":ncs.length,bg:"#fff1f2",c:"#dc2626"},{l:"Pontos",v:ronda.pontos||0,bg:"#f0fdf4",c:"#16a34a"},{l:"Fotos",v:PLS.reduce((a,p)=>a+(ronda.checklist?.[p]||[]).filter(i=>i.foto).length,0),bg:"#f5f3ff",c:"#7c3aed"}].map(({l,v,bg,c})=>(
+            <div key={l} className="kpi-card" style={{background:bg,borderTopColor:c}}><div className="kpi-val" style={{color:c}}>{v}</div><div className="kpi-lbl">{l}</div></div>
           ))}
         </div>
-        <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:16}}>
-          {PLS.map(p=>{const its=ronda.checklist?.[p]||[];const c=its.filter(i=>i.s==="c"||i.status==="conforme").length;const t=its.filter(i=>i.s==="c"||i.s==="n"||i.status==="conforme"||i.status==="naoconforme").length;const pp=t?Math.round(c/t*100):0;return(
-            <div key={p}><div style={{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:13}}>
-              <span style={{fontWeight:600}}>{P5[p].e} {p}</span>
-              <span style={{fontWeight:700,color:cx(pp)}}>{pp}%</span>
-            </div><PBar pct={pp} h={8}/></div>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:14}}>
+          {PLS.map(p=>{const its=ronda.checklist?.[p]||[];const c=its.filter(i=>i.s==="c").length;const t=its.filter(i=>i.s==="c"||i.s==="n").length;const pp=t?Math.round(c/t*100):0;return(
+            <div key={p}><div style={{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:13}}><span style={{fontWeight:600}}>{P5[p].e} {p}</span><span style={{fontWeight:700,color:cx(pp)}}>{pp}%</span></div><PBar pct={pp} h={7}/></div>
           );})}
         </div>
+        {(()=>{const fotos=[];PLS.forEach(p=>(ronda.checklist?.[p]||[]).forEach((it,i)=>{if(it.foto)fotos.push({src:it.foto,label:`${p}#${i+1}`});}));if(!fotos.length)return null;return(
+          <div style={{marginBottom:14}}><p style={{fontWeight:700,color:"#374151",fontSize:13,marginBottom:8}}>📷 Fotos ({fotos.length})</p><div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{fotos.map((f,i)=><img key={i} src={f.src} className="foto-prev" onClick={()=>sFotoAmp(f.src)} title={f.label}/>)}</div></div>
+        );})()}
         {ld?<div style={{display:"flex",alignItems:"center",gap:8,padding:10,background:"#f8fafc",borderRadius:8}}><Spin sz={18}/><span style={{fontSize:13,color:"#64748b"}}>Carregando NCs...</span></div>
-        :ncs.length===0?<div style={{padding:12,background:"#f0fdf4",borderRadius:8,border:"1px solid #bbf7d0",textAlign:"center"}}><span style={{fontSize:13,color:"#16a34a",fontWeight:600}}>✅ Nenhuma NC</span></div>
-        :<div style={{maxHeight:180,overflowY:"auto",display:"flex",flexDirection:"column",gap:6}}>
-          {ncs.map((n,i)=><div key={n.id||i} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:10,background:"#fff1f2",borderRadius:8,border:"1px solid #fecaca",gap:8}}>
-            <div style={{flex:1}}><p style={{fontSize:13,fontWeight:600,color:"#1e293b",marginBottom:4}}>{n.descricao}</p>
-            <p style={{fontSize:11,color:"#94a3b8"}}>👤 {n.responsavel||"—"} | 📅 {n.prazo||"—"}</p></div>
-            <BSt s={n.status}/>
-          </div>)}
-        </div>}
-        <div style={{display:"flex",gap:12,borderTop:"1px solid #f1f5f9",paddingTop:16,marginTop:16}}>
-          <button className="btn-sec" onClick={onClose} style={{flex:1}}>Fechar</button>
+        :ncs.length===0?<div style={{padding:12,background:"#f0fdf4",borderRadius:8,border:"1px solid #bbf7d0",textAlign:"center",marginBottom:14}}><span style={{fontSize:13,color:"#16a34a",fontWeight:600}}>✅ Nenhuma NC</span></div>
+        :<div style={{marginBottom:14}}><p style={{fontWeight:700,color:"#dc2626",fontSize:13,marginBottom:8}}>⚠ {ncs.length} NC(s)</p><div style={{display:"flex",flexDirection:"column",gap:8,maxHeight:240,overflowY:"auto"}}>
+          {ncs.map((n,i)=>(
+            <div key={n.id||i} style={{padding:12,background:"#fff1f2",borderRadius:8,border:"1px solid #fecaca"}}>
+              <div style={{display:"flex",justifyContent:"space-between",gap:8,marginBottom:4,flexWrap:"wrap"}}><p style={{fontSize:13,fontWeight:600,flex:1}}>{n.descricao}</p><BSt s={n.status}/></div>
+              <p style={{fontSize:11,color:"#94a3b8",marginBottom:6}}>👤 {n.responsavel||"—"} | 📅 {n.prazo||"—"}</p>
+              {n.fotoResolucao&&<img src={n.fotoResolucao} className="foto-prev" onClick={()=>sFotoAmp(n.fotoResolucao)} style={{marginBottom:6}}/>}
+              {n.log&&n.log.length>0&&<div style={{background:"#fff",borderRadius:6,padding:8,border:"1px solid #fecaca"}}>{n.log.map((l,li)=>(
+                <div key={li} className="log-item"><span>{l.acao==="Aberta"?"🔴":l.acao==="Em Andamento"?"🟡":"🟢"}</span><div><span style={{fontWeight:600,fontSize:12}}>{l.acao}</span><span style={{color:"#94a3b8",marginLeft:6,fontSize:11}}>{l.data}</span>{l.obs&&<p style={{color:"#64748b",fontSize:12,marginTop:2}}>💬 {l.obs}</p>}</div></div>
+              ))}</div>}
+            </div>
+          ))}
+        </div></div>}
+        <div style={{display:"flex",gap:10}}>
+          <button className="btn btn-p" onClick={()=>{try{window.gerarWord(ronda,ncs);show("✔ Word gerado!","success");}catch(e){show("Erro","error");}}} style={{flex:1}}>📄 Word</button>
+          <button className="btn btn-sec" onClick={onClose} style={{flex:1}}>Fechar</button>
         </div>
       </div>
     </div>
   );
 };
 
-/* ── HISTORICO ── */
+/* ================================================================
+   HISTÓRICO
+================================================================ */
 const Hist=({go})=>{
   const[rondas,sR]=useState([]);const[ld,sLd]=useState(true);const[err,sErr]=useState("");
   const[sel,sSel]=useState(null);const[filtro,sF]=useState("");const[ord,sO]=useState("data");
@@ -456,46 +628,51 @@ const Hist=({go})=>{
   },[rondas,filtro,ord]);
   if(err)return<Err msg={err} back={()=>go("home")}/>;
   return(
-    <div className="fi" style={{maxWidth:800,margin:"0 auto",padding:16}}>
-      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
-        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
-        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>📁 Historico</h2>
-        <p style={{fontSize:13,color:"#64748b"}}>{rondas.length} ronda(s)</p></div>
+    <div className="fi container">
+      <div className="page-header">
+        <button className="btn btn-sec" style={{padding:"8px 14px",fontSize:13}} onClick={()=>go("home")}>← Voltar</button>
+        <div className="page-title"><h2>📁 Historico</h2><p>{rondas.length} ronda(s)</p></div>
+        <div className="page-actions">
+          <button className="btn btn-ghost" style={{fontSize:13,padding:"8px 12px"}} onClick={()=>{sLd(true);window.FS.getRondas().then(d=>sR(d||[])).catch(e=>sErr(e.message)).finally(()=>sLd(false));}}>🔄</button>
+          <button className="btn btn-p" style={{fontSize:13}} onClick={()=>go("nova")}>+ Nova</button>
+        </div>
       </div>
-      <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap"}}>
-        <input type="text" placeholder="🔍 Filtrar..." style={{flex:1,minWidth:180}} value={filtro} onChange={e=>sF(e.target.value)}/>
-        <select value={ord} onChange={e=>sO(e.target.value)} style={{width:"auto"}}>
-          <option value="data">📅 Recente</option><option value="pct">📈 Conformidade</option><option value="pts">🏆 Pontos</option>
-        </select>
-        <button className="btn-p" style={{fontSize:13}} onClick={()=>go("nova")}>+ Nova</button>
+      <div className="filter-row">
+        <input type="text" placeholder="🔍 Filtrar..." value={filtro} onChange={e=>sF(e.target.value)}/>
+        <select value={ord} onChange={e=>sO(e.target.value)}><option value="data">📅 Recente</option><option value="pct">📈 Conformidade</option><option value="pts">🏆 Pontos</option></select>
       </div>
-      {ld?<div className="card" style={{padding:48,textAlign:"center"}}><Spin/><p style={{marginTop:12,color:"#94a3b8"}}>Carregando...</p></div>
-      :lista.length===0?<div className="card" style={{padding:48,textAlign:"center",color:"#94a3b8"}}><div style={{fontSize:48,marginBottom:12}}>📭</div><p style={{marginBottom:16}}>Nenhuma ronda.</p><button className="btn-p" onClick={()=>go("nova")}>+ Criar primeira</button></div>
+      {ld?<div className="card" style={{padding:48,textAlign:"center"}}><Spin/><p style={{marginTop:12,color:"#94a3b8"}}>Buscando...</p></div>
+      :lista.length===0?<div className="card empty"><div className="empty-icon">📭</div><p>{rondas.length===0?"Nenhuma ronda ainda.":"Nenhuma ronda encontrada."}</p><button className="btn btn-p" onClick={()=>go("nova")}>+ Criar ronda</button></div>
       :<div style={{display:"flex",flexDirection:"column",gap:10}}>
-        {lista.map((r,i)=>{const p=r.conformidade_percentual||0;const nx=lista[i+1];const dlt=nx?p-(nx.conformidade_percentual||0):null;return(
-          <div key={r.id} className="card" style={{padding:16,cursor:"pointer",borderLeft:`4px solid ${cx(p)}`}} onClick={()=>sSel(r)}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
-                  <span style={{fontWeight:700,color:"#1e293b"}}>{r.setor||"—"}</span>
-                  <LPct p={p}/>
-                  {r.turno&&<span style={{fontSize:11,color:"#94a3b8",background:"#f1f5f9",padding:"1px 8px",borderRadius:20}}>{r.turno}</span>}
-                  {dlt!==null&&<span style={{fontSize:12,fontWeight:700,color:dlt>0?"#16a34a":dlt<0?"#dc2626":"#94a3b8"}}>{dlt>0?`▲ +${dlt.toFixed(1)}%`:dlt<0?`▼ ${dlt.toFixed(1)}%`:"= 0%"}</span>}
+        {lista.map((r,i)=>{
+          const p=r.conformidade_percentual||0;const nx=lista[i+1];const dlt=nx?p-(nx.conformidade_percentual||0):null;
+          const nFotos=PLS.reduce((a,pl)=>a+(r.checklist?.[pl]||[]).filter(it=>it.foto).length,0);
+          return(
+            <div key={r.id} className="item-card clickable" style={{borderLeftColor:cx(p)}} onClick={()=>sSel(r)}>
+              <div className="item-row">
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
+                    <span style={{fontWeight:700,fontSize:15}}>{r.setor||"—"}</span><LPct p={p}/>
+                    {r.turno&&<span className="badge" style={{background:"#f1f5f9",color:"#64748b"}}>{r.turno}</span>}
+                    {dlt!==null&&<span style={{fontSize:12,fontWeight:700,color:dlt>0?"#16a34a":dlt<0?"#dc2626":"#94a3b8"}}>{dlt>0?`▲ +${dlt.toFixed(1)}%`:dlt<0?`▼ ${dlt.toFixed(1)}%`:"="}</span>}
+                  </div>
+                  <div className="item-meta"><span>📅 {r.data}</span><span>👤 {r.responsavel||"—"}</span><span>⚠ {r.ncs_total||0} NC</span><span>🏆 {r.pontos||0} pts</span>{nFotos>0&&<span>📷 {nFotos}</span>}</div>
+                  <PBar pct={p} h={7}/>
                 </div>
-                <div style={{fontSize:13,color:"#64748b",marginBottom:8}}>📅 {r.data} | 👤 {r.responsavel||"—"} | ⚠ {r.ncs_total||0} NC | 🏆 {r.pontos||0} pts</div>
-                <div style={{maxWidth:280}}><PBar pct={p} h={8}/></div>
+                <button className="btn btn-p" style={{fontSize:13,padding:"8px 14px",flexShrink:0}} onClick={e=>{e.stopPropagation();sSel(r);}}>Ver →</button>
               </div>
-              <button className="btn-p" style={{fontSize:13,padding:"8px 16px"}} onClick={e=>{e.stopPropagation();sSel(r);}}>Ver →</button>
             </div>
-          </div>
-        );})}
+          );
+        })}
       </div>}
-      {sel&&<Modal ronda={sel} onClose={()=>sSel(null)}/>}
+      {sel&&<ModalRonda ronda={sel} onClose={()=>sSel(null)}/>}
     </div>
   );
 };
 
-/* ── DASHBOARD ── */
+/* ================================================================
+   DASHBOARD
+================================================================ */
 const Dash=({go})=>{
   const[rondas,sR]=useState([]);const[kpi,sK]=useState([]);const[ld,sLd]=useState(true);const[err,sErr]=useState("");
   const rB=useRef(null);const rL=useRef(null);const rRd=useRef(null);const ch=useRef({});
@@ -503,12 +680,13 @@ const Dash=({go})=>{
   useEffect(()=>{
     if(ld||err)return;
     const dl=k=>{if(ch.current[k]){ch.current[k].destroy();ch.current[k]=null;}};
-    if(rB.current&&rondas.length>0){dl("b");try{const s=rondas.slice(-8);const d=s.map(r=>r.conformidade_percentual||0);ch.current["b"]=new Chart(rB.current,{type:"bar",data:{labels:s.map(r=>r.data?.substring(5)||""),datasets:[{data:d,borderRadius:6,borderSkipped:false,backgroundColor:d.map((v,i)=>i===0?"#3b82f6":v>d[i-1]?"#22c55e":v<d[i-1]?"#ef4444":"#3b82f6")}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+"%"}},x:{grid:{display:false}}}}});}catch(e){}}
-    if(rL.current&&kpi.length>0){dl("l");try{ch.current["l"]=new Chart(rL.current,{type:"line",data:{labels:kpi.map(k=>k.id),datasets:[{data:kpi.map(k=>k.total_pontos||0),borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,.1)",fill:true,tension:.4,pointRadius:5,pointBackgroundColor:"#1d4ed8"}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true},x:{grid:{display:false}}}}});}catch(e){}}
-    if(rRd.current&&rondas.length>0){dl("r");try{const u=rondas.slice(-5);const m=PLS.map(p=>{let t=0,c=0;u.forEach(r=>(r.checklist?.[p]||[]).forEach(i=>{if(i.s==="c"||i.s==="n"||i.status==="conforme"||i.status==="naoconforme"){t++;if(i.s==="c"||i.status==="conforme")c++;}}));return t?Math.round(c/t*100):0;});ch.current["r"]=new Chart(rRd.current,{type:"radar",data:{labels:PLS.map(p=>`${P5[p].e} ${p}`),datasets:[{data:m,borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,.15)",pointBackgroundColor:"#1d4ed8",pointRadius:5}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{r:{min:0,max:100,ticks:{stepSize:25,callback:v=>v+"%"},grid:{color:"#e2e8f0"}}}}});}catch(e){}}
-    return()=>{ ["b","l","r"].forEach(dl); };
+    const opts={responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}}};
+    if(rB.current&&rondas.length>0){dl("b");try{const s=rondas.slice(-8);const d=s.map(r=>r.conformidade_percentual||0);ch.current["b"]=new Chart(rB.current,{type:"bar",data:{labels:s.map(r=>r.data?.substring(5)||""),datasets:[{data:d,borderRadius:6,borderSkipped:false,backgroundColor:d.map((v,i)=>i===0?"#3b82f6":v>d[i-1]?"#22c55e":v<d[i-1]?"#ef4444":"#3b82f6")}]},options:{...opts,scales:{y:{min:0,max:100,ticks:{callback:v=>v+"%"}},x:{grid:{display:false}}}}});}catch(e){}}
+    if(rL.current&&kpi.length>0){dl("l");try{ch.current["l"]=new Chart(rL.current,{type:"line",data:{labels:kpi.map(k=>k.id),datasets:[{data:kpi.map(k=>k.total_pontos||0),borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,.1)",fill:true,tension:.4,pointRadius:5,pointBackgroundColor:"#1d4ed8"}]},options:{...opts,scales:{y:{beginAtZero:true},x:{grid:{display:false}}}}});}catch(e){}}
+    if(rRd.current&&rondas.length>0){dl("r");try{const u=rondas.slice(-5);const m=PLS.map(p=>{let t=0,c=0;u.forEach(r=>(r.checklist?.[p]||[]).forEach(i=>{if(i.s==="c"||i.s==="n"){t++;if(i.s==="c")c++;}}));return t?Math.round(c/t*100):0;});ch.current["r"]=new Chart(rRd.current,{type:"radar",data:{labels:PLS.map(p=>`${P5[p].e} ${p}`),datasets:[{data:m,borderColor:"#1d4ed8",backgroundColor:"rgba(29,78,216,.15)",pointBackgroundColor:"#1d4ed8",pointRadius:5}]},options:{...opts,scales:{r:{min:0,max:100,ticks:{stepSize:25,callback:v=>v+"%"},grid:{color:"#e2e8f0"}}}}});}catch(e){}}
+    return()=>{["b","l","r"].forEach(dl);};
   },[ld,rondas,kpi,err]);
-  if(ld)return<div style={{minHeight:"80vh",display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{textAlign:"center"}}><Spin sz={48}/><p style={{marginTop:16,color:"#64748b",fontWeight:600}}>Carregando...</p></div></div>;
+  if(ld)return<div style={{minHeight:"70vh",display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{textAlign:"center"}}><Spin sz={48}/><p style={{marginTop:16,color:"#64748b",fontWeight:600}}>Carregando...</p></div></div>;
   if(err)return<Err msg={err} back={()=>go("home")}/>;
   const u=rondas.slice(-8);
   const med=u.length?u.reduce((a,r)=>a+(r.conformidade_percentual||0),0)/u.length:0;
@@ -516,110 +694,422 @@ const Dash=({go})=>{
   const pio=u.length?Math.min(...u.map(r=>r.conformidade_percentual||0)):0;
   const tpt=kpi.reduce((a,k)=>a+(k.total_pontos||0),0);
   return(
-    <div className="fi" style={{maxWidth:960,margin:"0 auto",padding:16}}>
-      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
-        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
-        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>📊 Dashboard 5S</h2>
-        <p style={{fontSize:13,color:"#64748b"}}>{rondas.length} rondas</p></div>
+    <div className="fi container">
+      <div className="page-header">
+        <button className="btn btn-sec" style={{padding:"8px 14px",fontSize:13}} onClick={()=>go("home")}>← Voltar</button>
+        <div className="page-title"><h2>📊 Dashboard 5S</h2><p>{rondas.length} rondas</p></div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
+      <div className="kpi-grid" style={{marginBottom:20}}>
         {[{e:"📈",l:"Media",v:`${med.toFixed(1)}%`,c:"#1d4ed8",bg:"#eff6ff"},{e:"🏆",l:"Melhor",v:`${mel.toFixed(1)}%`,c:"#16a34a",bg:"#f0fdf4"},{e:"📉",l:"Pior",v:`${pio.toFixed(1)}%`,c:"#dc2626",bg:"#fff1f2"},{e:"⭐",l:"Total Pts",v:tpt,c:"#7c3aed",bg:"#f5f3ff"}].map(({e,l,v,c,bg})=>(
-          <div key={l} className="card" style={{padding:16,textAlign:"center",borderTop:`4px solid ${c}`,background:bg}}>
-            <div style={{fontSize:28}}>{e}</div><div style={{fontSize:22,fontWeight:800,color:c,marginTop:4}}>{v}</div>
-            <div style={{fontSize:11,color:"#64748b",marginTop:2}}>{l}</div>
-          </div>
+          <div key={l} className="kpi-card card" style={{background:bg,borderTopColor:c}}><div style={{fontSize:24}}>{e}</div><div className="kpi-val" style={{color:c,marginTop:4}}>{v}</div><div className="kpi-lbl">{l}</div></div>
         ))}
       </div>
-      {rondas.length===0?<div style={{background:"#fefce8",border:"1px solid #fde68a",borderRadius:12,padding:24,textAlign:"center"}}><p style={{color:"#92400e",fontWeight:600}}>⚠ Nenhuma ronda ainda!</p><button className="btn-p" style={{marginTop:12}} onClick={()=>go("nova")}>+ Nova Ronda</button></div>:(
-        <>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
-            <div className="card" style={{padding:20}}><h3 style={{fontWeight:700,color:"#374151",marginBottom:12}}>📊 Semanal</h3><canvas ref={rB}/></div>
-            <div className="card" style={{padding:20}}><h3 style={{fontWeight:700,color:"#374151",marginBottom:12}}>🕸 Radar por Pilar</h3><canvas ref={rRd}/></div>
-          </div>
-          <div className="card" style={{padding:20}}>
-            <h3 style={{fontWeight:700,color:"#374151",marginBottom:12}}>📅 KPI Mensal</h3>
-            {kpi.length>0?<canvas ref={rL}/>:<p style={{color:"#94a3b8",textAlign:"center",padding:24}}>Sem dados ainda.</p>}
-          </div>
-        </>
-      )}
+      {rondas.length===0?<div style={{background:"#fefce8",border:"1px solid #fde68a",borderRadius:12,padding:24,textAlign:"center"}}><p style={{color:"#92400e",fontWeight:600}}>⚠ Nenhuma ronda!</p><button className="btn btn-p" style={{marginTop:12}} onClick={()=>go("nova")}>+ Nova Ronda</button></div>
+      :<><div className="dash-grid" style={{marginBottom:16}}>
+        <div className="card card-pad"><h3 style={{fontWeight:700,color:"#374151",marginBottom:12,fontSize:14}}>📊 Conformidade por Ronda</h3><canvas ref={rB}/></div>
+        <div className="card card-pad"><h3 style={{fontWeight:700,color:"#374151",marginBottom:12,fontSize:14}}>🕸 Radar por Pilar</h3><canvas ref={rRd}/></div>
+      </div>
+      <div className="card card-pad"><h3 style={{fontWeight:700,color:"#374151",marginBottom:12,fontSize:14}}>📅 Pontos Mensais</h3>{kpi.length>0?<canvas ref={rL}/>:<p style={{color:"#94a3b8",textAlign:"center",padding:20}}>Sem dados mensais.</p>}</div></>}
     </div>
   );
 };
 
-/* ── NCs ── */
+/* ================================================================
+   MODAL DETALHES NC — NOVO (visualizar + editar)
+================================================================ */
+const ModalDetalheNC=({nc,onClose,onAtualizar,onDeletar})=>{
+  const[editando,sEditando]=useState(false);
+  const[desc,sDesc]=useState(nc.descricao||"");
+  const[resp,sResp]=useState(nc.responsavel||"");
+  const[prazo,sPrazo]=useState(nc.prazo||"");
+  const[novaFoto,sNovaFoto]=useState(null);
+  const[prevFoto,sPrevFoto]=useState(null);
+  const[salvando,sSalvando]=useState(false);
+  const[fotoAmp,sFotoAmp]=useState(null);
+  const{toast,show}=useToast();
+
+  const selFoto=arq=>{
+    if(!arq)return;
+    sNovaFoto(arq);
+    const fr=new FileReader();fr.onload=e=>sPrevFoto(e.target.result);fr.readAsDataURL(arq);
+  };
+
+  const salvarEdicao=async()=>{
+    sSalvando(true);
+    try{
+      let fotoUrl=nc.fotoResolucao||null;
+      if(novaFoto){
+        show("📷 Enviando foto...","info");
+        fotoUrl=await window.FS.uploadFoto(novaFoto,`ncs/${nc.id}_edit_${Date.now()}`);
+      }
+      const logEntry={acao:"Editada",data:new Date().toLocaleString("pt-BR"),obs:`Desc: ${desc} | Resp: ${resp} | Prazo: ${prazo}`};
+      const upd={descricao:desc,responsavel:resp,prazo};
+      if(fotoUrl)upd.fotoResolucao=fotoUrl;
+      await window.FS.atualizarNC(nc.id,upd,logEntry);
+      show("✔ NC atualizada!","success");
+      onAtualizar({...nc,...upd,log:[...(nc.log||[]),logEntry]});
+      sEditando(false);sNovaFoto(null);sPrevFoto(null);
+    }catch(e){show("Erro: "+e.message,"error");}
+    sSalvando(false);
+  };
+
+  const reabrirNC=async()=>{
+    try{
+      const logEntry={acao:"Reaberta",data:new Date().toLocaleString("pt-BR"),obs:"NC reaberta manualmente"};
+      await window.FS.atualizarNC(nc.id,{status:"aberto"},logEntry);
+      show("🔄 NC reaberta!","warning");
+      onAtualizar({...nc,status:"aberto",log:[...(nc.log||[]),logEntry]});
+    }catch(e){show("Erro","error");}
+  };
+
+  const corBorda=nc.status==="resolvido"?"#22c55e":nc.status==="em_andamento"?"#eab308":"#ef4444";
+
+  return(
+    <div className="mo" style={{zIndex:1200}} onClick={onClose}>
+      <div className="mb" style={{maxWidth:580}} onClick={e=>e.stopPropagation()}>
+        <Toast toast={toast}/>
+        {fotoAmp&&<FotoModal src={fotoAmp} onClose={()=>sFotoAmp(null)}/>}
+
+        {/* Handle */}
+        <div style={{width:40,height:4,background:"#e2e8f0",borderRadius:2,margin:"0 auto 16px"}}/>
+
+        {/* Cabeçalho */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
+              <span style={{fontSize:18}}>⚠</span>
+              <h3 style={{fontSize:17,fontWeight:700,color:"#1e293b"}}>Nao Conformidade</h3>
+              <BSt s={nc.status}/>
+            </div>
+          </div>
+          <button onClick={onClose} style={{background:"none",border:"none",fontSize:28,cursor:"pointer",color:"#94a3b8",lineHeight:1,padding:"0 4px",flexShrink:0}}>×</button>
+        </div>
+
+        {/* ── MODO VISUALIZAÇÃO ── */}
+        {!editando&&(
+          <>
+            {/* Descrição */}
+            <div className="nc-section">
+              <p className="nc-section-title">📋 Descricao do Problema</p>
+              <p style={{fontSize:15,fontWeight:600,color:"#1e293b",lineHeight:1.5}}>{nc.descricao||"—"}</p>
+            </div>
+
+            {/* Dados */}
+            <div className="nc-section">
+              <p className="nc-section-title">📌 Informacoes</p>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div><p style={{fontSize:11,color:"#94a3b8",fontWeight:600,marginBottom:3}}>RESPONSAVEL</p><p style={{fontSize:14,fontWeight:600,color:"#374151"}}>{nc.responsavel||"Nao definido"}</p></div>
+                <div><p style={{fontSize:11,color:"#94a3b8",fontWeight:600,marginBottom:3}}>PRAZO</p><p style={{fontSize:14,fontWeight:600,color:nc.prazo?"#374151":"#94a3b8"}}>{nc.prazo||"Nao definido"}</p></div>
+                {nc.ronda_id&&<div style={{gridColumn:"1/-1"}}><p style={{fontSize:11,color:"#94a3b8",fontWeight:600,marginBottom:3}}>RONDA ID</p><p style={{fontSize:12,color:"#64748b",fontFamily:"monospace"}}>{nc.ronda_id}</p></div>}
+              </div>
+            </div>
+
+            {/* Foto de resolução */}
+            {nc.fotoResolucao&&(
+              <div className="nc-section">
+                <p className="nc-section-title">📷 Foto de Resolucao / Evidencia</p>
+                <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
+                  <img src={nc.fotoResolucao} style={{width:110,height:110,objectFit:"cover",borderRadius:10,border:`3px solid ${corBorda}`,cursor:"pointer",flexShrink:0}} onClick={()=>sFotoAmp(nc.fotoResolucao)}/>
+                  <div>
+                    <p style={{fontSize:13,color:"#16a34a",fontWeight:600,marginBottom:4}}>✔ Foto registrada</p>
+                    <p style={{fontSize:12,color:"#64748b",marginBottom:10}}>Toque na foto para ampliar</p>
+                    <button className="btn btn-ghost" style={{fontSize:12,padding:"6px 12px"}} onClick={()=>sFotoAmp(nc.fotoResolucao)}>🔍 Ampliar</button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {!nc.fotoResolucao&&(
+              <div style={{padding:12,background:"#f8fafc",borderRadius:10,border:"2px dashed #e2e8f0",textAlign:"center",marginBottom:12}}>
+                <p style={{fontSize:13,color:"#94a3b8"}}>📷 Sem foto de evidencia</p>
+              </div>
+            )}
+
+            {/* Log de ações */}
+            <div className="nc-section">
+              <p className="nc-section-title">📋 Historico de Acoes ({(nc.log||[]).length})</p>
+              {(nc.log||[]).length===0
+                ?<p style={{fontSize:13,color:"#94a3b8",textAlign:"center",padding:"8px 0"}}>Nenhuma acao registrada</p>
+                :<div style={{maxHeight:200,overflowY:"auto"}}>
+                  {(nc.log||[]).map((l,i)=>(
+                    <div key={i} className="log-item">
+                      <div style={{flexShrink:0,width:28,height:28,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:l.acao==="Aberta"?"#fee2e2":l.acao==="Em Andamento"?"#fef9c3":l.acao==="Resolvida"?"#dcfce7":"#f1f5f9",fontSize:14}}>
+                        {l.acao==="Aberta"?"🔴":l.acao==="Em Andamento"?"🟡":l.acao==="Resolvida"?"🟢":l.acao==="Editada"?"✏️":"📝"}
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:4}}>
+                          <span style={{fontWeight:700,fontSize:13,color:"#374151"}}>{l.acao}</span>
+                          <span style={{color:"#94a3b8",fontSize:11}}>{l.data}</span>
+                        </div>
+                        {l.obs&&<p style={{color:"#64748b",fontSize:12,marginTop:3,lineHeight:1.4}}>💬 {l.obs}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              }
+            </div>
+
+            {/* Botões de ação */}
+            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:4}}>
+              <button className="btn btn-p" style={{flex:1,minWidth:100}} onClick={()=>sEditando(true)}>✏️ Editar NC</button>
+              {nc.status==="resolvido"&&(
+                <button className="btn btn-warn" style={{flex:1,minWidth:100}} onClick={reabrirNC}>🔄 Reabrir</button>
+              )}
+              <button className="btn btn-danger" style={{padding:"10px 14px"}} onClick={()=>{if(confirm("Excluir esta NC?"))onDeletar(nc.id);}}>🗑</button>
+            </div>
+          </>
+        )}
+
+        {/* ── MODO EDIÇÃO ── */}
+        {editando&&(
+          <>
+            <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:12,marginBottom:16}}>
+              <p style={{fontSize:13,color:"#1d4ed8",fontWeight:600}}>✏️ Modo Edicao — altere os campos abaixo</p>
+            </div>
+
+            <div style={{marginBottom:14}}>
+              <label className="lbl">Descricao do problema *</label>
+              <textarea rows={3} value={desc} onChange={e=>sDesc(e.target.value)} style={{borderColor:"#93c5fd"}}/>
+            </div>
+            <div className="form-row" style={{marginBottom:14}}>
+              <div><label className="lbl">Responsavel</label><input type="text" value={resp} onChange={e=>sResp(e.target.value)} placeholder="Nome do responsavel"/></div>
+              <div><label className="lbl">Prazo</label><input type="date" value={prazo} onChange={e=>sPrazo(e.target.value)}/></div>
+            </div>
+
+            {/* Trocar foto */}
+            <div style={{marginBottom:16}}>
+              <label className="lbl">📷 Foto de evidencia / resolucao</label>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
+                <label className="fl fl-cam">📸 Tirar foto<input type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={e=>e.target.files[0]&&selFoto(e.target.files[0])}/></label>
+                <label className="fl">🖼 Galeria<input type="file" accept="image/*" style={{display:"none"}} onChange={e=>e.target.files[0]&&selFoto(e.target.files[0])}/></label>
+              </div>
+              {/* Preview nova foto */}
+              {prevFoto&&(
+                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:8}}>
+                  <img src={prevFoto} style={{width:80,height:80,objectFit:"cover",borderRadius:8,border:"3px solid #3b82f6"}}/>
+                  <div><p style={{fontSize:13,color:"#2563eb",fontWeight:600}}>✔ Nova foto selecionada</p><p style={{fontSize:11,color:"#64748b"}}>Sera salva ao confirmar</p></div>
+                </div>
+              )}
+              {/* Foto atual (se não trocou) */}
+              {!prevFoto&&nc.fotoResolucao&&(
+                <div style={{display:"flex",alignItems:"center",gap:12}}>
+                  <img src={nc.fotoResolucao} style={{width:80,height:80,objectFit:"cover",borderRadius:8,border:"2px solid #e2e8f0",cursor:"pointer"}} onClick={()=>sFotoAmp(nc.fotoResolucao)}/>
+                  <p style={{fontSize:12,color:"#64748b"}}>Foto atual — selecione acima para trocar</p>
+                </div>
+              )}
+              {!prevFoto&&!nc.fotoResolucao&&<div style={{padding:12,background:"#f8fafc",borderRadius:8,border:"2px dashed #e2e8f0",textAlign:"center",color:"#94a3b8",fontSize:13}}>Nenhuma foto</div>}
+            </div>
+
+            <div style={{display:"flex",gap:10}}>
+              <button className="btn btn-s" style={{flex:2}} onClick={salvarEdicao} disabled={salvando}>{salvando?<><span className="sp"/> Salvando...</>:"✔ Salvar Alteracoes"}</button>
+              <button className="btn btn-sec" style={{flex:1}} onClick={()=>{sEditando(false);sNovaFoto(null);sPrevFoto(null);}}>Cancelar</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ================================================================
+   MODAL RESOLVER NC
+================================================================ */
+const ModalResolverNC=({nc,onConfirm,onCancelar})=>{
+  const[obs,sObs]=useState("");const[foto,sFoto]=useState(null);const[prev,sPrev]=useState(null);const[err,sErr]=useState("");
+  const sel=arq=>{if(!arq)return;sFoto(arq);const fr=new FileReader();fr.onload=e=>sPrev(e.target.result);fr.readAsDataURL(arq);};
+  return(
+    <div className="mo" style={{zIndex:1500}} onClick={e=>e.stopPropagation()}>
+      <div className="mb" style={{maxWidth:480}}>
+        <div style={{width:40,height:4,background:"#e2e8f0",borderRadius:2,margin:"0 auto 16px"}}/>
+        <h3 style={{fontSize:17,fontWeight:700,marginBottom:4}}>✔ Resolver NC</h3>
+        <div style={{background:"#fff1f2",padding:10,borderRadius:8,border:"1px solid #fecaca",marginBottom:16}}>
+          <p style={{fontSize:13,color:"#dc2626",fontWeight:600}}>{nc.descricao}</p>
+        </div>
+        <div style={{marginBottom:16}}><label className="lbl">Observacao da resolucao</label><textarea rows={3} placeholder="Como foi resolvido?" value={obs} onChange={e=>sObs(e.target.value)}/></div>
+        <div style={{marginBottom:16}}>
+          <label className="lbl" style={{color:"#dc2626"}}>📷 Foto de confirmacao (OBRIGATORIA) *</label>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
+            <label className="fl fl-cam">📸 Tirar foto<input type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={e=>e.target.files[0]&&sel(e.target.files[0])}/></label>
+            <label className="fl">🖼 Galeria<input type="file" accept="image/*" style={{display:"none"}} onChange={e=>e.target.files[0]&&sel(e.target.files[0])}/></label>
+          </div>
+          {prev?<div style={{display:"flex",alignItems:"center",gap:12}}><img src={prev} style={{width:90,height:90,objectFit:"cover",borderRadius:8,border:"3px solid #16a34a"}}/><div><p style={{fontSize:13,color:"#16a34a",fontWeight:700}}>✔ Foto selecionada!</p><p style={{fontSize:11,color:"#64748b"}}>Toque para trocar</p></div></div>
+          :<div style={{padding:16,background:"#f8fafc",borderRadius:8,border:"2px dashed #e2e8f0",textAlign:"center",color:"#94a3b8",fontSize:13}}>Nenhuma foto selecionada</div>}
+        </div>
+        {err&&<div style={{background:"#fff1f2",border:"1px solid #fca5a5",borderRadius:8,padding:10,color:"#dc2626",fontSize:13,marginBottom:12}}>{err}</div>}
+        <div style={{display:"flex",gap:10}}>
+          <button className="btn btn-s" style={{flex:1}} onClick={()=>{if(!foto){sErr("⚠ Foto obrigatoria!");return;}onConfirm(obs,foto);}}>✔ Confirmar</button>
+          <button className="btn btn-sec" style={{flex:1}} onClick={onCancelar}>Cancelar</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ================================================================
+   NÃO CONFORMIDADES — com clique para abrir detalhes
+================================================================ */
 const NCs=({go})=>{
   const[ncs,sN]=useState([]);const[ld,sLd]=useState(true);const[err,sErr]=useState("");
   const[fi,sFi]=useState("todos");const[bk,sBk]=useState("");
+  const[selNC,sSelNC]=useState(null);       // NC aberta no modal detalhes
+  const[modalRes,sModalRes]=useState(null); // NC para resolver
   const{toast,show}=useToast();
+
   useEffect(()=>{window.FS.getNCs().then(d=>sN(d||[])).catch(e=>sErr("Erro: "+e.message)).finally(()=>sLd(false));},[]);
-  const mudar=async(id,st)=>{try{await window.FS.atualizarNC(id,{status:st});sN(p=>p.map(n=>n.id===id?{...n,status:st}:n));show(st==="resolvido"?"✔ Resolvida!":"⟳ Em andamento",st==="resolvido"?"success":"info");}catch(e){show("Erro: "+e.message,"error");}};
-  const cnt=useMemo(()=>({todos:ncs.length,aberto:ncs.filter(n=>n.status==="aberto").length,em_andamento:ncs.filter(n=>n.status==="em_andamento").length,resolvido:ncs.filter(n=>n.status==="resolvido").length}),[ncs]);
+
+  const mudar=async(id,status,obs="",fotoFile=null)=>{
+    try{
+      let fotoUrl=null;
+      if(fotoFile){show("📷 Enviando...","info");fotoUrl=await window.FS.uploadFoto(fotoFile,`ncs/${id}_${Date.now()}`);}
+      const logEntry={acao:status==="resolvido"?"Resolvida":status==="em_andamento"?"Em Andamento":"Reaberta",data:agora(),obs};
+      const upd={status};if(fotoUrl)upd.fotoResolucao=fotoUrl;
+      await window.FS.atualizarNC(id,upd,logEntry);
+      sN(p=>p.map(n=>n.id!==id?n:{...n,status,...(fotoUrl?{fotoResolucao:fotoUrl}:{}),log:[...(n.log||[]),logEntry]}));
+      show(status==="resolvido"?"✔ NC resolvida!":"⟳ Atualizado","success");
+    }catch(e){show("Erro: "+e.message,"error");}
+  };
+
+  const atualizarNC=useCallback(dados=>{
+    sN(prev=>prev.map(n=>n.id===dados.id?dados:n));
+    sSelNC(dados); // atualiza o modal aberto
+  },[]);
+
+  const deletarNC=useCallback(async id=>{
+    try{await window.FS.deletarNC(id);sN(p=>p.filter(x=>x.id!==id));sSelNC(null);show("🗑 NC removida","info");}
+    catch(e){show("Erro ao excluir","error");}
+  },[show]);
+
+  const cnt=useMemo(()=>({
+    todos:ncs.length,
+    aberto:ncs.filter(n=>n.status==="aberto").length,
+    em_andamento:ncs.filter(n=>n.status==="em_andamento").length,
+    resolvido:ncs.filter(n=>n.status==="resolvido").length
+  }),[ncs]);
+
   const lista=useMemo(()=>ncs.filter(n=>(fi==="todos"||n.status===fi)&&(!bk||n.descricao?.toLowerCase().includes(bk.toLowerCase())||n.responsavel?.toLowerCase().includes(bk.toLowerCase()))),[ncs,fi,bk]);
+
   if(err)return<Err msg={err} back={()=>go("home")}/>;
+
   return(
-    <div className="fi" style={{maxWidth:800,margin:"0 auto",padding:16}}>
+    <div className="fi container">
       <Toast toast={toast}/>
-      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
-        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
-        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>⚠ Nao Conformidades</h2>
-        <p style={{fontSize:13,color:"#64748b"}}>{cnt.aberto+cnt.em_andamento} abertas | {cnt.resolvido} resolvidas</p></div>
+
+      {/* Modal detalhes NC */}
+      {selNC&&(
+        <ModalDetalheNC
+          nc={selNC}
+          onClose={()=>sSelNC(null)}
+          onAtualizar={atualizarNC}
+          onDeletar={deletarNC}
+        />
+      )}
+      {/* Modal resolver NC */}
+      {modalRes&&(
+        <ModalResolverNC
+          nc={modalRes}
+          onConfirm={(obs,foto)=>{mudar(modalRes.id,"resolvido",obs,foto);sModalRes(null);}
+          }
+          onCancelar={()=>sModalRes(null)}
+        />
+      )}
+
+      <div className="page-header">
+        <button className="btn btn-sec" style={{padding:"8px 14px",fontSize:13}} onClick={()=>go("home")}>← Voltar</button>
+        <div className="page-title"><h2>⚠ Nao Conformidades</h2><p>{cnt.aberto+cnt.em_andamento} abertas | {cnt.resolvido} resolvidas</p></div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:16}}>
+
+      {/* KPIs */}
+      <div className="kpi-grid" style={{marginBottom:14}}>
         {[{l:"Total",v:cnt.todos,c:"#64748b"},{l:"Abertas",v:cnt.aberto,c:"#dc2626"},{l:"Andamento",v:cnt.em_andamento,c:"#d97706"},{l:"Resolvidas",v:cnt.resolvido,c:"#16a34a"}].map(({l,v,c})=>(
-          <div key={l} className="card" style={{padding:12,textAlign:"center",borderTop:`3px solid ${c}`}}>
-            <div style={{fontSize:22,fontWeight:800,color:c}}>{v}</div>
-            <div style={{fontSize:11,color:"#64748b"}}>{l}</div>
+          <div key={l} className="kpi-card card" style={{background:"#fff",borderTopColor:c,padding:"12px 8px"}}>
+            <div className="kpi-val" style={{color:c}}>{v}</div>
+            <div className="kpi-lbl">{l}</div>
           </div>
         ))}
       </div>
-      <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap"}}>
-        {[{v:"todos",l:"📋 Todos"},{v:"aberto",l:"○ Aberto"},{v:"em_andamento",l:"⟳ Andamento"},{v:"resolvido",l:"✔ Resolvido"}].map(({v,l})=>(
-          <button key={v} onClick={()=>sFi(v)} style={{padding:"6px 14px",borderRadius:20,fontSize:13,fontWeight:600,cursor:"pointer",background:fi===v?"#1d4ed8":"#fff",color:fi===v?"#fff":"#374151",border:fi===v?"2px solid #1d4ed8":"2px solid #e2e8f0"}}>{l} ({cnt[v]??ncs.length})</button>
+
+      {/* Filtros */}
+      <div className="chips">
+        {[{v:"todos",l:"Todos"},{v:"aberto",l:"○ Aberto"},{v:"em_andamento",l:"⟳ Andamento"},{v:"resolvido",l:"✔ Resolvido"}].map(({v,l})=>(
+          <button key={v} className={`chip ${fi===v?"active":""}`} onClick={()=>sFi(v)}>{l} ({cnt[v]??ncs.length})</button>
         ))}
       </div>
-      <input type="text" placeholder="🔍 Buscar..." style={{marginBottom:16,maxWidth:360}} value={bk} onChange={e=>sBk(e.target.value)}/>
+      <div className="filter-row">
+        <input type="text" placeholder="🔍 Buscar por descricao ou responsavel..." value={bk} onChange={e=>sBk(e.target.value)}/>
+      </div>
+
       {ld?<div className="card" style={{padding:48,textAlign:"center"}}><Spin/><p style={{marginTop:12,color:"#94a3b8"}}>Carregando...</p></div>
-      :lista.length===0?<div className="card" style={{padding:48,textAlign:"center",color:"#94a3b8"}}><div style={{fontSize:48,marginBottom:12}}>✅</div><p>Nenhuma NC encontrada.</p></div>
+      :lista.length===0?<div className="card empty"><div className="empty-icon">✅</div><p>Nenhuma NC encontrada.</p></div>
       :<div style={{display:"flex",flexDirection:"column",gap:10}}>
-        {lista.map(n=>(
-          <div key={n.id} className="card" style={{padding:16,borderLeft:`4px solid ${n.status==="resolvido"?"#22c55e":n.status==="em_andamento"?"#eab308":"#ef4444"}`}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8,marginBottom:8}}>
-              <p style={{fontWeight:600,color:"#1e293b",flex:1}}>{n.descricao}</p><BSt s={n.status}/>
+        {lista.map(n=>{
+          const corBorda=n.status==="resolvido"?"#22c55e":n.status==="em_andamento"?"#eab308":"#ef4444";
+          return(
+            <div key={n.id} className="nc-card" style={{borderLeftColor:corBorda}} onClick={()=>sSelNC(n)}>
+              {/* Linha topo */}
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8,marginBottom:8}}>
+                <div style={{flex:1,minWidth:0}}>
+                  <p style={{fontWeight:700,color:"#1e293b",fontSize:15,lineHeight:1.4,marginBottom:4}}>{n.descricao}</p>
+                  <div style={{display:"flex",gap:10,flexWrap:"wrap",fontSize:13,color:"#64748b"}}>
+                    <span>👤 {n.responsavel||"Sem responsavel"}</span>
+                    {n.prazo&&<span>📅 {n.prazo}</span>}
+                  </div>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6,flexShrink:0}}>
+                  <BSt s={n.status}/>
+                  {n.fotoResolucao&&<span className="badge bb">📷 Foto</span>}
+                </div>
+              </div>
+
+              {/* Mini log (última ação) */}
+              {n.log&&n.log.length>0&&(
+                <div style={{background:"#f8fafc",borderRadius:8,padding:"6px 10px",display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                  <span style={{fontSize:14}}>{n.log[n.log.length-1].acao==="Aberta"?"🔴":n.log[n.log.length-1].acao==="Em Andamento"?"🟡":n.log[n.log.length-1].acao==="Resolvida"?"🟢":"✏️"}</span>
+                  <div style={{flex:1,minWidth:0}}>
+                    <span style={{fontSize:12,fontWeight:600,color:"#374151"}}>{n.log[n.log.length-1].acao}</span>
+                    <span style={{fontSize:11,color:"#94a3b8",marginLeft:8}}>{n.log[n.log.length-1].data}</span>
+                    {n.log[n.log.length-1].obs&&<p style={{fontSize:11,color:"#64748b",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>💬 {n.log[n.log.length-1].obs}</p>}
+                  </div>
+                  <span style={{fontSize:11,color:"#94a3b8",flexShrink:0}}>{n.log.length} acao(oes)</span>
+                </div>
+              )}
+
+              {/* Botões rápidos (não sobem o clique pro card) */}
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}} onClick={e=>e.stopPropagation()}>
+                <span style={{fontSize:12,color:"#94a3b8",marginRight:"auto"}}>👆 Toque para ver detalhes</span>
+                {n.status==="aberto"&&(
+                  <button onClick={e=>{e.stopPropagation();mudar(n.id,"em_andamento","",null);}} style={{fontSize:12,padding:"6px 12px",borderRadius:6,background:"#fef9c3",color:"#92400e",border:"1px solid #fde68a",cursor:"pointer",fontWeight:600}}>⟳ Iniciar</button>
+                )}
+                {n.status!=="resolvido"&&(
+                  <button onClick={e=>{e.stopPropagation();sModalRes(n);}} style={{fontSize:12,padding:"6px 12px",borderRadius:6,background:"#dcfce7",color:"#166534",border:"1px solid #bbf7d0",cursor:"pointer",fontWeight:600}}>📸 Resolver</button>
+                )}
+              </div>
             </div>
-            <p style={{fontSize:13,color:"#64748b",marginBottom:8}}>👤 {n.responsavel||"—"} | 📅 {n.prazo||"—"}</p>
-            {n.status!=="resolvido"&&<div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              {n.status==="aberto"&&<button onClick={()=>mudar(n.id,"em_andamento")} style={{fontSize:12,padding:"5px 12px",borderRadius:6,background:"#fef9c3",color:"#92400e",border:"1px solid #fde68a",cursor:"pointer",fontWeight:600}}>⟳ Iniciar</button>}
-              <button onClick={()=>mudar(n.id,"resolvido")} style={{fontSize:12,padding:"5px 12px",borderRadius:6,background:"#dcfce7",color:"#166534",border:"1px solid #bbf7d0",cursor:"pointer",fontWeight:600}}>✔ Resolver</button>
-              <button onClick={()=>{if(confirm("Excluir?")){window.FS.deletarNC(n.id).then(()=>{sN(p=>p.filter(x=>x.id!==n.id));show("Removida","info");}).catch(e=>show("Erro","error"));}}} style={{fontSize:12,padding:"5px 12px",borderRadius:6,background:"#f1f5f9",color:"#64748b",border:"1px solid #e2e8f0",cursor:"pointer",fontWeight:600,marginLeft:"auto"}}>🗑</button>
-            </div>}
-          </div>
-        ))}
+          );
+        })}
       </div>}
     </div>
   );
 };
 
-/* ── RELATÓRIOS ── */
+/* ================================================================
+   RELATÓRIOS
+================================================================ */
 const Rels=({go})=>{
   const[rels,sR]=useState([]);const[ld,sLd]=useState(true);const[err,sErr]=useState("");
   useEffect(()=>{window.FS.getRelatorios().then(d=>sR(d||[])).catch(e=>sErr("Erro: "+e.message)).finally(()=>sLd(false));},[]);
   if(err)return<Err msg={err} back={()=>go("home")}/>;
   return(
-    <div className="fi" style={{maxWidth:800,margin:"0 auto",padding:16}}>
-      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
-        <button onClick={()=>go("home")} className="btn-sec" style={{padding:"6px 14px",fontSize:13}}>← Voltar</button>
-        <div><h2 style={{fontSize:22,fontWeight:700,color:"#1e293b"}}>📄 Relatorios</h2>
-        <p style={{fontSize:13,color:"#64748b"}}>{rels.length} relatorio(s)</p></div>
+    <div className="fi container">
+      <div className="page-header">
+        <button className="btn btn-sec" style={{padding:"8px 14px",fontSize:13}} onClick={()=>go("home")}>← Voltar</button>
+        <div className="page-title"><h2>📄 Relatorios</h2><p>{rels.length} arquivo(s)</p></div>
       </div>
-      {ld?<div className="card" style={{padding:48,textAlign:"center"}}><Spin/><p style={{marginTop:12,color:"#94a3b8"}}>Carregando...</p></div>
-      :rels.length===0?<div className="card" style={{padding:48,textAlign:"center",color:"#94a3b8"}}><div style={{fontSize:48,marginBottom:12}}>📭</div><p>Nenhum relatorio ainda.</p></div>
+      {ld?<div className="card" style={{padding:48,textAlign:"center"}}><Spin/></div>
+      :rels.length===0?<div className="card empty"><div className="empty-icon">📭</div><p>Nenhum relatorio ainda.</p><p style={{fontSize:12,marginTop:4}}>Finalize uma ronda para gerar o Word.</p></div>
       :<div style={{display:"flex",flexDirection:"column",gap:10}}>
         {rels.map(r=>(
-          <div key={r.id} className="card" style={{padding:16,display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}>
-            <div><p style={{fontWeight:600,color:"#1e293b"}}>📄 {r.setor||"Relatorio"} — {r.data||"—"}</p>
-            <p style={{fontSize:12,color:"#94a3b8",marginTop:2}}>{fd(r.criadoEm)}</p></div>
-            {r.pdf_url?<a href={r.pdf_url} target="_blank" className="btn-p" style={{fontSize:13,padding:"8px 16px",textDecoration:"none"}}>⬇ Baixar</a>
-            :<span style={{fontSize:12,color:"#94a3b8",fontStyle:"italic"}}>Indisponivel</span>}
+          <div key={r.id} className="card card-pad" style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+            <div><p style={{fontWeight:600,color:"#1e293b"}}>📄 {r.setor||"Relatorio"} — {r.data||"—"}</p><p style={{fontSize:12,color:"#94a3b8",marginTop:2}}>{fd(r.criadoEm)}</p></div>
+            {r.pdf_url?<a href={r.pdf_url} target="_blank" className="btn btn-p" style={{fontSize:13,padding:"8px 16px",textDecoration:"none"}}>⬇ Baixar</a>:<span style={{fontSize:12,color:"#94a3b8",fontStyle:"italic"}}>Gerado localmente</span>}
           </div>
         ))}
       </div>}
@@ -627,32 +1117,36 @@ const Rels=({go})=>{
   );
 };
 
-/* ── APP ROOT ── */
+/* ================================================================
+   APP ROOT
+================================================================ */
 const NAVS=[{t:"home",e:"🏠",l:"Inicio"},{t:"nova",e:"📋",l:"Nova"},{t:"hist",e:"📁",l:"Historico"},{t:"ncs",e:"⚠",l:"NCs"},{t:"dash",e:"📊",l:"Dashboard"},{t:"rel",e:"📄",l:"Relatorios"}];
-
 const App=()=>{
   const[tela,sTela]=useState("home");
   const render=()=>{const p={go:sTela};switch(tela){case"home":return<Home {...p}/>;case"nova":return<Nova {...p}/>;case"hist":return<Hist {...p}/>;case"dash":return<Dash {...p}/>;case"ncs":return<NCs {...p}/>;case"rel":return<Rels {...p}/>;default:return<Home {...p}/>;}}
   return(
     <div style={{minHeight:"100vh",background:"#f1f5f9"}}>
-      <header style={{background:"#fff",borderBottom:"1px solid #e2e8f0",padding:"8px 12px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:50,boxShadow:"0 1px 6px rgba(0,0,0,.06)"}}>
-        <div style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer"}} onClick={()=>sTela("home")}>
-          <span style={{fontSize:24}}>🏭</span>
-          <div><p style={{fontWeight:700,color:"#1e293b",fontSize:14,lineHeight:1.2}}>Rondas 5S</p>
-          <p style={{fontSize:11,color:"#94a3b8",lineHeight:1.2}}>fir-manutencao</p></div>
+      <header className="header">
+        <div className="header-brand" onClick={()=>sTela("home")}>
+          <span style={{fontSize:22}}>🏭</span>
+          <div className="header-brand-text"><p>Rondas 5S</p><p>fir-manutencao</p></div>
         </div>
-        <nav style={{display:"flex",overflowX:"auto"}}>
-          {NAVS.map(({t,e,l})=><button key={t} onClick={()=>sTela(t)} className={`nt ${tela===t?"active":""}`}>{e} {l}</button>)}
+        <nav className="header-nav" style={{display:"none"}} id="desktop-nav">
+          {NAVS.map(({t,e,l})=><button key={t} className={`nt ${tela===t?"active":""}`} onClick={()=>sTela(t)}><span>{e}</span><span className="nt-label">{l}</span></button>)}
         </nav>
       </header>
-      <main style={{paddingBottom:48}}>{render()}</main>
-      <footer style={{textAlign:"center",fontSize:12,color:"#94a3b8",padding:12,borderTop:"1px solid #e2e8f0",background:"#fff"}}>
-        Rondas 5S • fir-manutencao • v2.0 • {new Date().getFullYear()}
+      <style>{`@media(min-width:768px){#desktop-nav{display:flex!important}}`}</style>
+      <main className="main-content" style={{paddingTop:8}}>{render()}</main>
+      <nav className="bottom-nav">
+        {NAVS.map(({t,e,l})=><button key={t} className={tela===t?"active":""} onClick={()=>sTela(t)}><span>{e}</span><span>{l}</span></button>)}
+      </nav>
+      <footer style={{display:"none",textAlign:"center",fontSize:12,color:"#94a3b8",padding:"10px 16px",borderTop:"1px solid #e2e8f0",background:"#fff"}}>
+        Rondas 5S • v5.0 • {new Date().getFullYear()}
       </footer>
+      <style>{`@media(min-width:768px){footer{display:block!important}}`}</style>
     </div>
   );
 };
-
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
